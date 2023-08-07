@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-import { MONGODB_URI } from '.';
+import { connectionstring, jwtsecret } from '.';
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI, {});
+    await mongoose.connect(connectionstring, {});
     console.log('MongoDB connected');
   } catch (err) {
     console.error(`MongoDB connection error: ${err}`);

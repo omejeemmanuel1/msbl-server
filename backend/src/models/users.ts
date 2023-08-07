@@ -1,15 +1,21 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface UserDocument extends Document {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  status: any;
+  department: any;
+  role: any;
 }
 
 export const UserSchema = new Schema<UserDocument>(
   {
-    fullName: {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
       type: String,
       required: true,
     },
@@ -28,9 +34,14 @@ export const UserSchema = new Schema<UserDocument>(
       type: String,
       required: true,
     },
-    status: {
+    role: {
       type: String,
-      enum: ['pending', 'verified', 'suspended'],
+      enum: ['admin', 'initiator', 'checker', 'requester'],
+      default: 'pending',
+    },
+    department: {
+      type: String,
+      enum: ['admin', 'initiator', 'checker', 'requester'],
       default: 'pending',
     },
   },
