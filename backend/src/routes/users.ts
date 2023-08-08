@@ -1,9 +1,13 @@
 import express from 'express';
-import { login, createUser, logout } from '../controllers/users';
+import { login, createUser, logout, toggleActivation, fetchAllUsers } from '../controllers/users';
 
 const router = express.Router();
 
-router.post('/create-users', createUser);
+router.post('/create', createUser);
+
+router.get('/fetch-all', fetchAllUsers);
+
+router.post('/update-status/:id', toggleActivation);
 
 router.post('/login', login);
 

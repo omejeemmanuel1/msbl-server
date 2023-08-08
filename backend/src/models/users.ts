@@ -5,8 +5,9 @@ export interface UserDocument extends Document {
   lastName: string;
   email: string;
   password: string;
-  department: any;
-  role: any;
+  department: string;
+  role: string;
+  status: string;
 }
 
 export const UserSchema = new Schema<UserDocument>(
@@ -36,13 +37,16 @@ export const UserSchema = new Schema<UserDocument>(
     },
     role: {
       type: String,
-      enum: ['admin', 'initiator', 'checker', 'requester'],
-      default: 'pending',
+      required: true,
     },
     department: {
       type: String,
-      enum: ['admin', 'initiator', 'checker', 'requester'],
-      default: 'pending',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'inactive', 
     },
   },
   {
