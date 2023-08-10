@@ -1,11 +1,21 @@
 import express from 'express';
-import { login, register, logout } from '../controllers/users';
+import {
+  login,
+  createUser,
+  logout,
+  toggleActivation,
+  fetchAllUsers,
+} from '../controllers/users';
 
 const router = express.Router();
 
-router.post('/register', register);
-
 router.post('/login', login);
+
+router.post('/create', createUser);
+
+router.post('/update/:id', toggleActivation);
+
+router.get('/fetch-all', fetchAllUsers);
 
 router.post('/logout', logout);
 
