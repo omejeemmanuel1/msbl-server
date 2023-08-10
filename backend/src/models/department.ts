@@ -16,4 +16,7 @@ export const DepartmentSchema = new Schema<DepartmentDocument>(
   },
 );
 
-export const Department = mongoose.model<DepartmentDocument>('Department', DepartmentSchema);
+export const Department = mongoose.model<DepartmentDocument>(
+  'Department',
+  DepartmentSchema,
+);
