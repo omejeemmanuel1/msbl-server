@@ -32,8 +32,8 @@ export const RequestSchema = new Schema<RequestDocument>(
       },
     },
     clientPhone: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     initiator: {
       type: String,

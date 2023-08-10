@@ -1,6 +1,11 @@
 import express from 'express';
 import {
-    createRequest, searchRequest, approveRequest, declineRequest, fetchRequest, fetchAllRequests, 
+  createRequest,
+  searchRequest,
+  approveRequest,
+  declineRequest,
+  fetchRequest,
+  fetchAllRequests,
 } from '../controllers/request';
 
 const router = express.Router();

@@ -46,7 +46,7 @@ export const UserSchema = new Schema<UserDocument>(
     status: {
       type: String,
       enum: ['active', 'inactive'],
-      default: 'inactive', 
+      default: 'inactive',
     },
   },
   {
