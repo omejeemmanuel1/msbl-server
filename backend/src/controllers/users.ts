@@ -16,7 +16,7 @@ import bcrypt from 'bcryptjs';
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    
+
     const token = await generateToken(email, res);
 
     const formValidation = loginValidator.validate(req.body, variables);
@@ -54,11 +54,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'User not found' });
     }
     if (existingUser.status !== 'active') {
-      return res
-        .status(403)
-        .json({
-          error: 'Your account is deactivated, kindly contact your admin',
-        });
+      return res.status(403).json({
+        error: 'Your account is deactivated, kindly contact your admin',
+      });
     }
 
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
@@ -76,45 +74,105 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// export const createUser = async (req: Request, res: Response) => {
+//   try {
+//     const { firstName, lastName, email, department, role } = req.body;
+
+//     const formValidation = registerValidator.validate(req.body, variables);
+
+//     if (formValidation.error) {
+//       return res
+//         .status(400)
+//         .json({ Error: formValidation.error.details[0].message });
+//     }
+
+//     if (!emailValidator.validate(email)) {
+//       return res.status(400).json({ error: 'Invalid email address' });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ error: 'User already exists' });
+//     }
+
+//     const salt = await GenerateSalt();
+//     const hashedPassword = await GeneratePassword('Passw0rd!', salt);
+
+//     const newUser: UserDocument = new User({
+//       firstName,
+//       lastName,
+//       email,
+//       password: hashedPassword,
+//       department,
+//       role,
+//       status: 'inactive',
+//     });
+
+//     const savedUser = await newUser.save();
+
+//     res.status(201).json(savedUser);
+//   } catch (error) {
+//     console.error('Error creating user:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, department, role } = req.body;
+    const { users } = req.body;
 
-    const formValidation = registerValidator.validate(req.body, variables);
-
-    if (formValidation.error) {
+    if (!users || !Array.isArray(users)) {
       return res
         .status(400)
-        .json({ Error: formValidation.error.details[0].message });
+        .json({
+          error: 'Invalid input format. Please provide an object with a "users" property containing an array of users.',
+        });
     }
 
-    if (!emailValidator.validate(email)) {
-      return res.status(400).json({ error: 'Invalid email address' });
+    const savedUsers: UserDocument[] = [];
+
+    for (const userData of users) {
+      const { firstName, lastName, email, department, role } = userData;
+
+      const formValidation = registerValidator.validate(userData, variables);
+
+      if (formValidation.error) {
+        return res
+          .status(400)
+          .json({ Error: formValidation.error.details[0].message });
+      }
+
+      if (!emailValidator.validate(email)) {
+        return res.status(400).json({ error: 'Invalid email address' });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res
+          .status(400)
+          .json({ error: `User with email ${email} already exists` });
+      }
+
+      const salt = await GenerateSalt();
+      const hashedPassword = await GeneratePassword('Passw0rd!', salt);
+
+      const newUser: UserDocument = new User({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        department,
+        role,
+        status: 'inactive',
+      });
+
+      const savedUser = await newUser.save();
+      savedUsers.push(savedUser);
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
-    const salt = await GenerateSalt();
-    const hashedPassword = await GeneratePassword('Passw0rd!', salt);
-
-    const newUser: UserDocument = new User({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      department,
-      role,
-      status: 'inactive',
-    });
-
-    const savedUser = await newUser.save();
-
-    res.status(201).json(savedUser);
+    res.status(201).json(savedUsers);
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating users:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
