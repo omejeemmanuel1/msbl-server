@@ -40,6 +40,10 @@ export const resetPasswordValidator = Joi.object().keys({
   confirmPassword: Joi.string().equal(Joi.ref('password')).required(),
 });
 
+export const deptValidate = Joi.object({
+  role: Joi.string().required(),
+});
+
 export const variables = {
   abortEarly: false,
   errors: {

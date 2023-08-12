@@ -3,6 +3,8 @@ import { User, UserDocument } from '../models/users';
 import {
   GeneratePassword,
   GenerateSalt,
+  // GeneratePassword,
+  // GenerateSalt,
   generateToken,
 } from '../utils/notifications';
 import {
@@ -16,7 +18,7 @@ import bcrypt from 'bcryptjs';
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    
+
     const token = await generateToken(email, res);
 
     const formValidation = loginValidator.validate(req.body, variables);
@@ -54,11 +56,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'User not found' });
     }
     if (existingUser.status !== 'active') {
-      return res
-        .status(403)
-        .json({
-          error: 'Your account is deactivated, kindly contact your admin',
-        });
+      return res.status(403).json({
+        error: 'Your account is deactivated, kindly contact your admin',
+      });
     }
 
     const passwordMatch = await bcrypt.compare(password, existingUser.password);

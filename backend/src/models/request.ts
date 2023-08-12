@@ -11,7 +11,7 @@ export interface RequestDocument extends Document {
   docURL: string;
   authURL: string;
   comment: string;
-  status: any;
+  status: unknown;
 }
 
 export const RequestSchema = new Schema<RequestDocument>(

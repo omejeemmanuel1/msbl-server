@@ -1,10 +1,11 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import connectDB from './config/database';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import path from 'path';
 import cors from 'cors';
 import users from './routes/users';
+import department from './routes/department';
 
 const app = express();
 const port = 3000;
@@ -28,6 +29,7 @@ app.use(
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);
+app.use('/', department);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
