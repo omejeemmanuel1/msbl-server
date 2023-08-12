@@ -81,7 +81,7 @@ export const isSuperAdmin = async (
       },
     ];
 
-    const decodedToken = jwt.verify(token, 'yourSecretKey') as {
+    const decodedToken = jwt.verify(token, jwtsecret) as {
       email: string;
     };
     const userIsSuperAdmin = superadmin.find(
@@ -100,7 +100,7 @@ export const isSuperAdmin = async (
     }
   } catch (error) {
     console.error('Error in isSuperAdmin middleware:', error);
-    return sendErrorResponse(res, 500, 'Internal server error');
+    return sendErrorResponse(res, 500, 'Internal server error 3--');
   }
 };
 
