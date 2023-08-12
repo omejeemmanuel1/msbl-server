@@ -74,59 +74,15 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-// export const createUser = async (req: Request, res: Response) => {
-//   try {
-//     const { firstName, lastName, email, department, role } = req.body;
-
-//     const formValidation = registerValidator.validate(req.body, variables);
-
-//     if (formValidation.error) {
-//       return res
-//         .status(400)
-//         .json({ Error: formValidation.error.details[0].message });
-//     }
-
-//     if (!emailValidator.validate(email)) {
-//       return res.status(400).json({ error: 'Invalid email address' });
-//     }
-
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser) {
-//       return res.status(400).json({ error: 'User already exists' });
-//     }
-
-//     const salt = await GenerateSalt();
-//     const hashedPassword = await GeneratePassword('Passw0rd!', salt);
-
-//     const newUser: UserDocument = new User({
-//       firstName,
-//       lastName,
-//       email,
-//       password: hashedPassword,
-//       department,
-//       role,
-//       status: 'inactive',
-//     });
-
-//     const savedUser = await newUser.save();
-
-//     res.status(201).json(savedUser);
-//   } catch (error) {
-//     console.error('Error creating user:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { users } = req.body;
 
     if (!users || !Array.isArray(users)) {
-      return res
-        .status(400)
-        .json({
-          error: 'Invalid input format. Please provide an object with a "users" property containing an array of users.',
-        });
+      return res.status(400).json({
+        error:
+          'Invalid input format. Please provide an object with a "users" property containing an array of users.',
+      });
     }
 
     const savedUsers: UserDocument[] = [];

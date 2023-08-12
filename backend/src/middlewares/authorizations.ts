@@ -62,51 +62,44 @@ export const isSuperAdmin = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
 
-      if (!token) {
-        return sendErrorResponse(res, 401, 'Kindly sign in as a user');
-      }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return sendErrorResponse(res, 401, 'Kindly sign in as a user');
+    }
 
-      let verifiedUser;
+    const token = authHeader.substring(7);
 
-      try {
-        verifiedUser = jwt.verify(token, jwtsecret);
-      } catch (error) {
-        return sendErrorResponse(res, 401, 'Invalid token');
-      }
+    if (!token) {
+      return sendErrorResponse(res, 401, 'Kindly sign in as a user');
+    }
 
-      const { email } = verifiedUser as { email: string };
+    const superadmin = [
+      {
+        email: 'muhammadmuawiya@meristemng.com',
+        name: 'Muhammad Muawiya Alkali',
+        phone: '+2347080407711',
+      },
+    ];
 
-      try {
-        const user = await User.findOne({ email });
+    const decodedToken = jwt.verify(token, 'yourSecretKey') as {
+      email: string;
+    };
+    const userIsSuperAdmin = superadmin.find(
+      (admin) => admin.email === decodedToken.email,
+    );
 
-        if (!user) {
-          return sendErrorResponse(
-            res,
-            401,
-            'Kindly register or sign in as a user',
-          );
-        }
-
-        if (user.role !== 'superadmin') {
-          return sendErrorResponse(
-            res,
-            403,
-            'Only verified teachers can perform this action',
-          );
-        }
-
-        req.user = verifiedUser;
-        next();
-      } catch (error) {
-        console.error('Error finding user:', error);
-        return sendErrorResponse(res, 500, 'Internal server error');
-      }
+    if (userIsSuperAdmin) {
+      req.user = decodedToken;
+      next();
+    } else {
+      return sendErrorResponse(
+        res,
+        403,
+        'You are not authorized as a superadmin',
+      );
     }
   } catch (error) {
-    console.error('Error in user authentication middleware:', error);
+    console.error('Error in isSuperAdmin middleware:', error);
     return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
