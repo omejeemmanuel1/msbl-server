@@ -6,16 +6,19 @@ import {
   toggleActivation,
   fetchAllUsers,
 } from '../controllers/users';
+import { isAdmin, isSuperAdmin } from '../middlewares/authorizations';
 
 const router = express.Router();
 
 router.post('/login', login);
 
-router.post('/create', createUser);
+router.post('/create-user', isAdmin, createUser);
 
-router.post('/update/:id', toggleActivation);
+router.post('/create-admin', isSuperAdmin, createUser);
 
-router.get('/fetch-all', fetchAllUsers);
+router.post('/update/:id', isAdmin, toggleActivation);
+
+router.get('/fetch-all', isAdmin, fetchAllUsers);
 
 router.post('/logout', logout);
 

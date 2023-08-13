@@ -1,9 +1,14 @@
+// import { Link } from 'react-router-dom';
+import './adminDashboard.css';
+import UserForm from './UserForm';
 
+const AdminDashboard = () => {
 
-const Dashboard = () => {
-    return (
-      <div>Dashboard</div>
-    )
-  }
-  
-export default Dashboard
+  return ( 
+    <>
+      <UserForm />
+    </>
+  );
+}
+
+export default AdminDashboard;
