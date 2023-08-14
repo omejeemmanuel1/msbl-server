@@ -29,7 +29,7 @@ app.use(
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);
-app.use('/', department);
+app.use('/department', department);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

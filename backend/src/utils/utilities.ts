@@ -41,7 +41,7 @@ export const resetPasswordValidator = Joi.object().keys({
 });
 
 export const deptValidate = Joi.object({
-  role: Joi.string().required(),
+  departmentName: Joi.string().required(),
 });
 
 export const variables = {

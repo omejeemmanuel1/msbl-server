@@ -3,7 +3,7 @@ import axios from 'axios';
 const baseURL = 'http://localhost:3000';
 
 
-const apiGet = (path: string) => {
+export const apiGet = (path: string) => {
     const config = {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -19,4 +19,13 @@ export const apiPost = (path: string, data: any) => {
         },
     };
     return axios.post(`${baseURL}${path}`, data, config);
+}
+
+export const apiPut = (path: string, data: any) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+    };
+    return axios.put(`${baseURL}${path}`, data, config);
 }
