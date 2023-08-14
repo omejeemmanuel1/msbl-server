@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "prettier --write \"src/**/*.ts\""

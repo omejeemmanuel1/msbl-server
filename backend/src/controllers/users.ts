@@ -3,6 +3,8 @@ import { User, UserDocument } from '../models/users';
 import {
   GeneratePassword,
   GenerateSalt,
+  // GeneratePassword,
+  // GenerateSalt,
   generateToken,
 } from '../utils/notifications';
 import {

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { connectionstring, jwtsecret } from '.';
+import { connectionstring } from '.';
 
 const connectDB = async () => {
   try {
