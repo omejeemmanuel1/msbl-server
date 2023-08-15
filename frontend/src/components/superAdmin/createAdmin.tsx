@@ -25,7 +25,7 @@ const initialAdmin: Admin = {
 };
 
 const AdminForm: React.FC = () => {
-  const [admins, setAdmins] = useState<Admin[]>([initialAdmin]);
+  const [users, setAdmins] = useState<Admin[]>([initialAdmin]);
 
   const { createAdmin } = useData();
 
@@ -66,10 +66,10 @@ const AdminForm: React.FC = () => {
     event.preventDefault();
 
     // Remove the 'id' field from each admin object
-    const adminsWithoutIds = admins.map(({ id, ...rest }) => rest);
+    const adminsWithoutIds = users.map(({ id, ...rest }) => rest);
 
     try {
-      const response = await createAdmin({ admins: adminsWithoutIds });
+      const response = await createAdmin({ users: adminsWithoutIds });
       console.log("Admins created:", response.data);
       toast.success("Admin(s) created successfully");
       setAdmins([initialAdmin]);
@@ -88,7 +88,7 @@ const AdminForm: React.FC = () => {
             Add Admin
           </button>
           <form onSubmit={handleSubmit}>
-            {admins.map((admin, index) => (
+            {users.map((admin, index) => (
               <div key={admin.id} className="admin-form">
                 <div className="flex-container">
                   <div className="form-group">
