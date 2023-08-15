@@ -4,9 +4,9 @@ import { apiPost, apiGet } from "./axios";
 export const dataContext = createContext<undefined | any>(undefined);
 
 const DataProvider = ({ children }: any) => {
-  const createAdmin = async (user: any) => {
+  const createAdmin = async (admin: any) => {
     try {
-      const response = await apiPost("/users/create-admin", user);
+      const response = await apiPost("/users/create-admin", admin);
       return response.data;
     } catch (error) {
       console.error("Error creating admin:", error);

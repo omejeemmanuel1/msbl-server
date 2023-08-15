@@ -39,7 +39,7 @@
   display: flex;
 }
 
-.user-initials {
+.admin-initials {
   width: 36px;
   height: 36px;
   display: flex;
@@ -149,8 +149,8 @@
 
 /* End of NavBar */
 
-/* New user form */
-.user-form-container {
+/* New admin form */
+.admin-form-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,7 +165,7 @@
   font-family: "Josefin", sans-serif;
 }
 
-.user-form {
+.admin-form {
   width: auto !important;
 }
 
@@ -247,10 +247,10 @@
   background-color: #1f3b5a;
 }
 
-.user-list h2 {
+.admin-list h2 {
   color: #21502c;
 }
-.btn-user {
+.btn-admin {
   background-color: #0fac36;
   color: white;
   border: none;
@@ -262,7 +262,7 @@
   margin-left: 400px;
 }
 
-.btn-user:hover {
+.btn-admin:hover {
   background-color: #21502c;
 }
 
@@ -272,7 +272,7 @@
 
 /* Responsive adjustments for mobile screens */
 @media (max-width: 768px) {
-  .user-form-container {
+  .admin-form-container {
     max-width: 95%;
     margin: 0 auto;
     padding: 0px;
@@ -317,13 +317,13 @@
     margin-bottom: 20px;
   }
 
-  .btn-user {
+  .btn-admin {
     display: none;
   }
 }
 
-/* User list */
-.users-container {
+/* admin list */
+.admins-container {
   max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
@@ -335,23 +335,23 @@
   font-family: "Josefin", sans-serif;
 }
 
-.users-container h2 {
+.admins-container h2 {
   color: #21502c;
 }
 
-.users-table {
+.admins-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.users-table th,
-.users-table td {
+.admins-table th,
+.admins-table td {
   border: 1px solid #ccc;
   padding: 10px;
   text-align: center;
 }
 
-.users-table th {
+.admins-table th {
   background-color: #f0f0f0;
   color: #21502c;
 }
@@ -376,13 +376,13 @@
 
 /* Responsive adjustments for mobile screens */
 @media (max-width: 768px) {
-  .users-container {
+  .admins-container {
     padding: 10px;
     overflow-x: hidden;
   }
 
-  .users-table th,
-  .users-table td {
+  .admins-table th,
+  .admins-table td {
     padding: 0px;
     margin: 20px;
   }
@@ -411,7 +411,7 @@
   background-color: #1f3b5a;
 }
 
-.user-form2 {
+.admin-form2 {
   width: 30%;
   justify-content: center;
   align-items: center;
@@ -427,12 +427,12 @@
   margin-left: 400px;
 }
 
-.user-form2 h2 {
+.admin-form2 h2 {
   color: #21502c;
 }
 
 @media (max-width: 768px) {
-  .user-form2 {
+  .admin-form2 {
     width: 80%;
     padding: 20px;
     margin: 20px auto;

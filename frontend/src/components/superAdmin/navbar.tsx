@@ -14,7 +14,7 @@ const NavBar = () => {
       </div>
       <div className="nav">
         <ul className='nav-menu'>
-        <div className="user-initials">
+        <div className="admin-initials">
               {getInitials("Super Admin")}
             </div>
           <li className="nav-item">

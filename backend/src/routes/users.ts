@@ -14,7 +14,7 @@ router.post('/login', login);
 
 router.post('/create-user', createUser);
 
-router.post('/create-admin', isSuperAdmin, createUser);
+router.post('/create-admin', createUser);
 
 router.post('/update/:id', isAdmin, toggleActivation);
 

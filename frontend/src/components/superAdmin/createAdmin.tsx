@@ -65,7 +65,7 @@ const AdminForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Remove the 'id' field from each user object
+    // Remove the 'id' field from each admin object
     const adminsWithoutIds = admins.map(({ id, ...rest }) => rest);
 
     try {
@@ -81,15 +81,15 @@ const AdminForm: React.FC = () => {
 
   return (
     <>
-      <div className="user-form-container">
-        <div className="user-list">
+      <div className="admin-form-container">
+        <div className="admin-list">
           <h2 style={{ textAlign: "center" }}>Create New Admin(s)</h2>
-          <button className="btn-user" onClick={handleAddAdmin}>
+          <button className="btn-admin" onClick={handleAddAdmin}>
             Add Admin
           </button>
           <form onSubmit={handleSubmit}>
             {admins.map((admin, index) => (
-              <div key={admin.id} className="user-form">
+              <div key={admin.id} className="admin-form">
                 <div className="flex-container">
                   <div className="form-group">
                     <label>Firstname:</label>
