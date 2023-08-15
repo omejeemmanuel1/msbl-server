@@ -10,7 +10,7 @@ export const GeneratePassword = async (password: string, salt: string) => {
   return await bcrypt.hash(password, salt);
 };
 
-export const generateToken = async (email: string, res: Response | any) => {
+export const GenerateToken = async (email: string, res: Response | any) => {
   const payload = {
     email: email,
   };

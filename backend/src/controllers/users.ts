@@ -3,9 +3,7 @@ import { User, UserDocument } from '../models/users';
 import {
   GeneratePassword,
   GenerateSalt,
-  // GeneratePassword,
-  // GenerateSalt,
-  generateToken,
+  GenerateToken,
 } from '../utils/notifications';
 import {
   registerValidator,
@@ -19,7 +17,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const token = await generateToken(email, res);
+    const token = await GenerateToken(email, res);
 
     const formValidation = loginValidator.validate(req.body, variables);
 

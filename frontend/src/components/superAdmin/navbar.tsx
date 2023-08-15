@@ -1,10 +1,4 @@
-// import { Link } from 'react-router-dom';
 import Logo from '../../assets/meristem-logo.png';
-// import { AiOutlineUsergroupAdd } from 'react-icons/Ai';
-// import { FiUsers } from 'react-icons/Fi';
-// import { HiOutlineOfficeBuilding } from 'react-icons/Hi';
-// import './adminDashboard.css';
-
 
 const NavBar = () => {
     const getInitials = (name: string): string => {
