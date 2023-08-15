@@ -16,7 +16,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
-            <Route path="/create-admin" element={<SuperAdminPage />} />
+            <Route path="/super-admin" element={<SuperAdminPage />} />
             <Route path="/userForm" element={<UserForm />} />
             <Route path="/createDepartment" element={<CreateDepartment />} />
             <Route path="/users" element={<Users />} />
