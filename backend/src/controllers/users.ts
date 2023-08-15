@@ -30,16 +30,14 @@ export const login = async (req: Request, res: Response) => {
     // If user is SuperAdmin
     const superadmin = [
       {
-        email: 'muhammadmuawiya@meristemng.com',
-        name: 'Muhammad Muawiya Alkali',
-        phone: '+2347080407711',
+        email: 'superadmin@meristemng.com',
+        name: 'Super Admin',
+        password: 'WhatIsTheSuperAdminPassword0?',
       },
     ];
 
-    const adminPassword = 'WhatIsTheSuperAdminPassword0?';
-
     const admin = superadmin.find(
-      (admin) => admin.email === email && adminPassword === password,
+      (admin) => admin.email === email && admin.password === password,
     );
 
     if (admin) {

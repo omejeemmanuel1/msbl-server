@@ -12,13 +12,13 @@ const router = express.Router();
 
 router.post('/login', login);
 
-router.post('/create-user', createUser);
+router.post('/create-user', isAdmin, createUser);
 
 router.post('/create-admin', createUser);
 
 router.post('/update/:id', isAdmin, toggleActivation);
 
-router.get('/fetch-all', fetchAllUsers);
+router.get('/fetch-all', isAdmin, fetchAllUsers);
 
 router.post('/logout', logout);
 

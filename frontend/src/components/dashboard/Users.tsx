@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import ReactPaginate from "react-paginate";
 
 interface User {
-  id: number;
+  _id: number;
   firstName: string;
   lastName: string;
   department: string;
@@ -42,7 +42,7 @@ const Users: React.FC = () => {
       toast.success("User activated successfully!");
       setUsersData((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId ? { ...user, isActive: !user.isActive } : user
+          user._id === userId ? { ...user, isActive: !user.isActive } : user
         )
       );
     } catch (error) {
@@ -77,7 +77,7 @@ const Users: React.FC = () => {
           </thead>
           <tbody>
             {currentUsers.map((user, index) => (
-              <tr key={user.id}>
+              <tr key={user._id}>
                 <td>{indexOfFirstUser + index + 1}</td>
                 <td>
                   {user.firstName} {user.lastName}
@@ -89,7 +89,7 @@ const Users: React.FC = () => {
                     className={`action-button ${
                       user.isActive ? "active" : "inactive"
                     }`}
-                    onClick={() => handleToggleActive(user.id)}
+                    onClick={() => handleToggleActive(user._id)}
                   >
                     {user.isActive ? "Deactivate" : "Activate"}
                   </button>

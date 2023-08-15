@@ -10,6 +10,12 @@ import department from './routes/department';
 const app = express();
 const port = 3000;
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+};
+
 connectDB()
   .then(() => {})
   .catch((err) => {
@@ -20,12 +26,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  }),
-);
+app.use(cors(corsOptions));
+
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);

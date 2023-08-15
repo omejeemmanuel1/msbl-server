@@ -128,7 +128,7 @@ const AdminForm: React.FC = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Department</label>
+                    <label>Department:</label>
                     <select
                       value={admin.department}
                       onChange={(e) =>
