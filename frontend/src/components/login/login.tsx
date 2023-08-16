@@ -52,7 +52,7 @@ const Login: React.FC = () => {
         const data: Data = response.data;
         console.log(response.data);
         localStorage.setItem("token", data.token);
-        swal("ALERT", "Succesful", "success");
+        swal("Login", "Succesful", "success");
 
         setInterval(() => {
           count++;

@@ -10,6 +10,7 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
+import { superadminemail, superadminpassword } from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 
@@ -30,9 +31,9 @@ export const login = async (req: Request, res: Response) => {
     // If user is SuperAdmin
     const superadmin = [
       {
-        email: 'superadmin@meristemng.com',
+        email: superadminemail,
+        password: superadminpassword,
         name: 'Super Admin',
-        password: 'WhatIsTheSuperAdminPassword0?',
       },
     ];
 
