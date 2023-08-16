@@ -10,7 +10,7 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
-import { superadminemail, superadminpassword } from '../config';
+import { defaultpassword, superadminemail, superadminpassword } from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 
@@ -109,7 +109,7 @@ export const createUser = async (req: Request, res: Response) => {
       }
 
       const salt = await GenerateSalt();
-      const hashedPassword = await GeneratePassword('Passw0rd!', salt);
+      const hashedPassword = await GeneratePassword(defaultpassword, salt);
 
       const newUser: UserDocument = new User({
         firstName,
@@ -118,7 +118,7 @@ export const createUser = async (req: Request, res: Response) => {
         password: hashedPassword,
         department,
         role,
-        status: 'inactive',
+        status: 'active',
       });
 
       const savedUser = await newUser.save();
