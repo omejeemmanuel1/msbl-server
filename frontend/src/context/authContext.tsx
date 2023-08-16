@@ -4,6 +4,15 @@ import { apiPost, apiGet } from "./axios";
 export const dataContext = createContext<undefined | any>(undefined);
 
 const DataProvider = ({ children }: any) => {
+  const loginAdmins = async (user: any) => {
+    try {
+      const response = await apiPost("/users/login", user);
+      return response.data;
+    } catch (error) {
+      console.log("Error logging in", error);
+    }
+  };
+
   const createAdmin = async (admin: any) => {
     try {
       const response = await apiPost("/users/create-admin", admin);
@@ -67,6 +76,7 @@ const DataProvider = ({ children }: any) => {
   return (
     <dataContext.Provider
       value={{
+        loginAdmins,
         createAdmin,
         createUser,
         fetchUsers,

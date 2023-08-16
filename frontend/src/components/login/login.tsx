@@ -3,7 +3,7 @@ import Logo from "../../assets/meristem-logo.png";
 import Image from "../../assets/round.png";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useData } from "../../context/authContext";
 import swal from "sweetalert";
 
 interface Data {
@@ -13,59 +13,41 @@ interface Data {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { loginAdmins } = useData();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  let [count, setCount] = useState<number>(0);
-
-  // const loginUrl = baseUrl + apiEndpoint;
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setPassword(e.target.value);
-  };
-  const headers = {
-    "Content-Type": "application/json",
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-      const url = "http://localhost:3000";
-      const response = await axios.post(
-        `${url}/users/login`,
-        {
-          email: email,
-          password: password,
-        },
-        {
-          headers,
-          withCredentials: true,
-        }
-      );
 
-      if (response.data) {
-        const data: Data = response.data;
-        console.log(response.data);
+      // Call the login function from authContext
+      const response = await loginAdmins({
+        email: email,
+        password: password,
+      });
+
+      if (response) {
+        const data: Data = response;
         localStorage.setItem("token", data.token);
-        swal("Login", "Succesful", "success");
+        swal("Login", "Successful", "success");
 
-        setInterval(() => {
-          count++;
-          setCount(count + 1);
-          if (count == 2) {
-            navigate("/admin");
-          }
-        }, 1000);
+        setTimeout(() => {
+          navigate("/admin");
+        }, 2000); // Use setTimeout instead of setInterval for navigation
       } else {
-        console.log("err");
+        console.log("Error logging in");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error logging in", error);
     }
   };
 

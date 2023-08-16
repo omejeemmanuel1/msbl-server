@@ -11,7 +11,7 @@ interface User {
   lastName: string;
   department: string;
   role: string;
-  isActive: boolean;
+  status: string;
 }
 
 const Users: React.FC = () => {
@@ -42,7 +42,7 @@ const Users: React.FC = () => {
       toast.success("User activated successfully!");
       setUsersData((prevUsers) =>
         prevUsers.map((user) =>
-          user._id === userId ? { ...user, isActive: !user.isActive } : user
+          user._id === userId ? { ...user, isActive: !user.status } : user
         )
       );
     } catch (error) {
@@ -87,11 +87,11 @@ const Users: React.FC = () => {
                 <td>
                   <button
                     className={`action-button ${
-                      user.isActive ? "active" : "inactive"
+                      user.status ? "active" : "inactive"
                     }`}
                     onClick={() => handleToggleActive(user._id)}
                   >
-                    {user.isActive ? "Deactivate" : "Activate"}
+                    {user.status ? "Deactivate" : "Activate"}
                   </button>
                 </td>
               </tr>
