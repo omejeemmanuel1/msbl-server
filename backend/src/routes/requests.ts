@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post('/create', isInitiator, createRequest);
 
-router.post('/update', isUser, updateRequest);
+router.post('/update/:id', isUser, updateRequest);
 
 router.post('/approve/:id', isUser, approveRequest);
 
@@ -22,8 +22,8 @@ router.post('/decline/:id', isUser, declineRequest);
 
 router.get('/search', isUser, searchRequest);
 
-router.get('/:id', fetchRequest);
+router.get('/fetch/:id', isUser, fetchRequest);
 
-router.get('/all', fetchAllRequests);
+router.get('/fetch-all', isUser, fetchAllRequests);
 
 export default router;

@@ -1,16 +1,16 @@
-import express from 'express';
-import {
-  forgotPassword,
-  resetPassword,
-  verifyOTP,
-} from '../controllers/resetpassword';
+// import express from 'express';
+// import {
+//   forgotPassword,
+//   resetPassword,
+//   verifyOTP,
+// } from '../controllers/resetpassword';
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post('/forgot', forgotPassword);
+// router.post('/forgot', forgotPassword);
 
-router.post('/verify-otp', verifyOTP);
+// router.post('/verify-otp', verifyOTP);
 
-router.post('/reset', resetPassword);
+// router.post('/reset', resetPassword);
 
-export default router;
+// export default router;

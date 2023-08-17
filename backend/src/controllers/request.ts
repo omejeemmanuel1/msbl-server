@@ -23,7 +23,7 @@ export const createRequest = async (req: Request | any, res: Response) => {
     } = req.body;
 
     const { email } = req.user;
-    
+
     // Validate request body
     const validationResult = requestValidator.validate(req.body);
     if (validationResult.error) {
@@ -74,11 +74,11 @@ export const createRequest = async (req: Request | any, res: Response) => {
 
 export const updateRequest = async (req: Request | any, res: Response) => {
   try {
-    // const { requestId } = req.params;
-    const { requestId, comment } = req.body;
+    const requestId = req.params.id;
+    const { comment } = req.body;
     const { email } = req.user;
 
-console.log(requestId, email);
+    console.log(requestId, email);
 
     // Check user authentication
     if (!email) {
@@ -163,7 +163,7 @@ export const approveRequest = async (req: Request, res: Response) => {
     const requestId = req.params.id;
     const updatedRequest = await Requests.findByIdAndUpdate(
       requestId,
-      { $set: { status: 'approved' } },
+      { $set: { status: 'Approved' } },
       { new: true },
     );
     res.json(updatedRequest);
@@ -179,7 +179,7 @@ export const declineRequest = async (req: Request, res: Response) => {
     const requestId = req.params.id;
     const updatedRequest = await Requests.findByIdAndUpdate(
       requestId,
-      { $set: { status: 'declined' } },
+      { $set: { status: 'Declined' } },
       { new: true },
     );
     res.json(updatedRequest);
@@ -205,12 +205,13 @@ export const fetchRequest = async (req: Request, res: Response) => {
 };
 
 // Fetch all requests
-export const fetchAllRequests = async (_req: Request, res: Response) => {
+export const fetchAllRequests = async (req: Request, res: Response) => {
   try {
-    const requests = await Requests.find();
-    res.json(requests);
+    const allRequests = await Requests.find();
+
+    res.json(allRequests);
   } catch (error) {
-    console.error('Error fetching requests:', error);
+    console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
