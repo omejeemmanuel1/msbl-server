@@ -10,6 +10,11 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
+import {
+  defaultpassword,
+  superadminemail,
+  superadminpassword,
+} from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 
@@ -30,16 +35,14 @@ export const login = async (req: Request, res: Response) => {
     // If user is SuperAdmin
     const superadmin = [
       {
-        email: 'muhammadmuawiya@meristemng.com',
-        name: 'Muhammad Muawiya Alkali',
-        phone: '+2347080407711',
+        email: superadminemail,
+        password: superadminpassword,
+        name: 'Super Admin',
       },
     ];
 
-    const adminPassword = 'WhatIsTheSuperAdminPassword0?';
-
     const admin = superadmin.find(
-      (admin) => admin.email === email && adminPassword === password,
+      (admin) => admin.email === email && admin.password === password,
     );
 
     if (admin) {
@@ -110,7 +113,7 @@ export const createUser = async (req: Request, res: Response) => {
       }
 
       const salt = await GenerateSalt();
-      const hashedPassword = await GeneratePassword('Passw0rd!', salt);
+      const hashedPassword = await GeneratePassword(defaultpassword, salt);
 
       const newUser: UserDocument = new User({
         firstName,
@@ -119,7 +122,7 @@ export const createUser = async (req: Request, res: Response) => {
         password: hashedPassword,
         department,
         role,
-        status: 'inactive',
+        status: 'active',
       });
 
       const savedUser = await newUser.save();

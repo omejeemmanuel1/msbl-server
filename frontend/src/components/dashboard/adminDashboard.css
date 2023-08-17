@@ -364,12 +364,12 @@
 }
 
 .active {
-  background-color: #d9534f;
+  background-color: #21502c;
   color: white;
 }
 
 .inactive {
-  background-color: #21502c;
+  background-color: #d9534f;
   color: white;
 }
 
