@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { jwtsecret, hostname, username, password } from '../config';
+import { jwtsecret, hostname, username, password, port } from '../config';
 
 export const GenerateSalt = async () => {
   return await bcrypt.genSalt();
@@ -54,11 +54,15 @@ export const ValidateToken = async (token: string) => {
   }
 };
 
-export const SendVerification = async (email: string, name: string) => {
+export const SendActivationLink = async (
+  email: string,
+  name: string,
+  verificationLink: string,
+) => {
   try {
     const transporter = nodemailer.createTransport({
       host: hostname,
-      port: 587,
+      port: port,
       auth: {
         user: username,
         pass: password,
@@ -66,22 +70,23 @@ export const SendVerification = async (email: string, name: string) => {
     });
 
     const mailOptions = {
-      from: 'QuickGrade <quickgrade.hq@gmail.com>',
+      // from: 'MSBL <noreply@meristemng.com>',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
       to: email,
-      subject: 'Account Verification OTP',
+      subject: 'Account Activation',
       html: `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
-            Welcome to QuickGrade
+            Welcome to Operations Work Flow
           </h1>
-          <h2>Confirm your email address</h2>
+          <h2>Activate your account</h2>
           <p>
             Your confirmation code is below — enter it in the browser window where you’ve started signing up for QuickGrade.
           </p>
           <h1>${name}</h1>
-          <p>Please enter this OTP to verify your account.</p>
-          <p>Note that the OTP is only valid for 30 minutes.</p>
-          <p>Questions about setting up QuickGrade? Email us at quickgrade.hq@gmail.com</p>
+          <p>Please click the following link to verify your account:</p>
+          <a href="${verificationLink}">${verificationLink}</a>
+          <p>Note that the link is only valid for a limited time.</p>
           <p>If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
       `,
@@ -89,8 +94,8 @@ export const SendVerification = async (email: string, name: string) => {
 
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.error('Error sending verification OTP:', error);
-    throw new Error('Error sending verification OTP');
+    console.error('Error sending verification email:', error);
+    throw new Error('Error sending verification email');
   }
 };
 
@@ -98,7 +103,7 @@ export const SendPasswordResetOTP = async (email: string, otp: number) => {
   try {
     const transporter = nodemailer.createTransport({
       host: hostname,
-      port: 587,
+      port: port,
       auth: {
         user: username,
         pass: password,
@@ -106,18 +111,19 @@ export const SendPasswordResetOTP = async (email: string, otp: number) => {
     });
 
     const mailOptions = {
-      from: 'QuickGrade <quickgrade.hq@gmail.com>',
+      // from: 'MSBL <noreply@meristemng.com>',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
       to: email,
       subject: 'Password Reset OTP',
       html: `
- <div style="max-width:700px; font-size:110%; border:10px solid #ddd; 
-padding:50px 20px; margin:auto; ">
-<p>Your OTP to reset your password is:</p>
-  <h1>${otp}</h1>
-  <p>Please enter this OTP to reset your password.</p>
-  <p>Note that the OTP is only valid for 30 minutes.</p>
-  <p>If you did not make this request, please ignore this email.</p>
-  `,
+        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+          <p>Your OTP to reset your password is:</p>
+          <h1>${otp}</h1>
+          <p>Please enter this OTP to reset your password.</p>
+          <p>Note that the OTP is only valid for 30 minutes.</p>
+          <p>If you did not make this request, please ignore this email.</p>
+        </div>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -127,11 +133,15 @@ padding:50px 20px; margin:auto; ">
   }
 };
 
-export const SendRequestStatus = async (email: string, otp: number) => {
+export const SendRequestStatusMail = async (
+  email: string,
+  name: string,
+  status: string,
+) => {
   try {
     const transporter = nodemailer.createTransport({
       host: hostname,
-      port: 587,
+      port: port,
       auth: {
         user: username,
         pass: password,
@@ -139,30 +149,28 @@ export const SendRequestStatus = async (email: string, otp: number) => {
     });
 
     const mailOptions = {
-      from: 'QuickGrade <quickgrade.hq@gmail.com>',
+      // from: 'MSBL <noreply@meristemng.com>',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
       to: email,
-      subject: 'Account Verification OTP',
+      subject: 'Request Status Update',
       html: `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
-            Welcome to QuickGrade
+            Meristem Operations Work Flow
           </h1>
-          <h2>Confirm your email address</h2>
-          <p>
-            Your confirmation code is below — enter it in the browser window where you’ve started signing up for QuickGrade.
-          </p>
-          <h1>${otp}</h1>
-          <p>Please enter this OTP to verify your account.</p>
-          <p>Note that the OTP is only valid for 30 minutes.</p>
-          <p>Questions about setting up QuickGrade? Email us at quickgrade.hq@gmail.com</p>
-          <p>If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.</p>
+          <h2>Request Status Update</h2>
+          <p>Dear ${name},</p>
+          <p>Your request status has been updated.</p>
+          <h1>${status}</h1>
+          <p>Please contact us at operations@meristemng.com if you have any questions or concerns about your request.</p>
+          <p>If you didn’t request this email or have any questions, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
       `,
     };
 
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.error('Error sending verification OTP:', error);
-    throw new Error('Error sending verification OTP');
+    console.error('Error sending request status email:', error);
+    throw new Error('Error sending request status email');
   }
 };

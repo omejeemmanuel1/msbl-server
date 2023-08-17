@@ -6,7 +6,7 @@ import {
   Comment,
 } from '../models/requests';
 import { requestValidator } from '../utils/utilities';
-import { SendVerification } from '../utils/notifications';
+import { SendRequestStatusMail } from '../utils/notifications';
 import { User } from '../models/users';
 
 export const createRequest = async (req: Request | any, res: Response) => {
@@ -45,9 +45,6 @@ export const createRequest = async (req: Request | any, res: Response) => {
       return res.status(403).json({ error: 'Initiator not found or invalid.' });
     }
 
-    // Send verification notification to client
-    // await SendVerification(clientEmail, clientName);
-
     // Create new request
     const newRequest: RequestDocument = await Requests.create({
       clientName,
@@ -62,6 +59,9 @@ export const createRequest = async (req: Request | any, res: Response) => {
       narration,
       status: 'Started',
     });
+
+    // Send status of request to client
+    await SendRequestStatusMail(clientEmail, clientName, newRequest.status);
 
     return res
       .status(200)

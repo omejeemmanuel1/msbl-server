@@ -4,6 +4,7 @@ import {
   GeneratePassword,
   GenerateSalt,
   GenerateToken,
+  SendActivationLink,
 } from '../utils/notifications';
 import {
   registerValidator,
@@ -122,11 +123,17 @@ export const createUser = async (req: Request, res: Response) => {
         password: hashedPassword,
         department,
         role,
-        status: 'active',
+        status: 'inactive',
       });
 
       const savedUser = await newUser.save();
       savedUsers.push(savedUser);
+
+      await SendActivationLink(
+        email,
+        `${firstName} ${lastName}`,
+        `http://localhost:3000/users/update/${newUser._id}`,
+      );
     }
 
     res.status(201).json(savedUsers);
