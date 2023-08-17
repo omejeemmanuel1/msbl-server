@@ -10,7 +10,11 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
-import { defaultpassword, superadminemail, superadminpassword } from '../config';
+import {
+  defaultpassword,
+  superadminemail,
+  superadminpassword,
+} from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 

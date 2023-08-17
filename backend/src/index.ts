@@ -5,6 +5,7 @@ import logger from 'morgan';
 import path from 'path';
 import cors from 'cors';
 import users from './routes/users';
+import requests from './routes/requests';
 import department from './routes/department';
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);
+app.use('/requests', requests);
 app.use('/department', department);
 
 app.listen(port, () => {
