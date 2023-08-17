@@ -7,6 +7,7 @@ import cors from 'cors';
 import users from './routes/users';
 import requests from './routes/requests';
 import department from './routes/department';
+import passwords from './routes/resetpassword';
 
 const app = express();
 const port = 3000;
@@ -33,6 +34,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);
 app.use('/requests', requests);
+app.use('/password', passwords);
 app.use('/department', department);
 
 app.listen(port, () => {
