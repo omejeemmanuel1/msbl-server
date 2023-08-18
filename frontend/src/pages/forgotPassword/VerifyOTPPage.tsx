@@ -1,7 +1,7 @@
 import React from "react";
 import ForgotPassword from "../../components/password/forgotPassword";
 
-const ForgotPasswordPage: React.FC = () => {
+const VerifyOTPPage: React.FC = () => {
   return (
     <div>
       <ForgotPassword />
@@ -9,4 +9,4 @@ const ForgotPasswordPage: React.FC = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default VerifyOTPPage;

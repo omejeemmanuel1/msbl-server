@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/users';
-import { jwtsecret } from '../config';
+import { jwtsecret, superadminemail, superadminpassword } from '../config';
 
 const sendErrorResponse = (res: Response, status: number, message: string) => {
   return res.status(status).json({ error: message });
@@ -76,9 +76,9 @@ export const isSuperAdmin = async (
 
     const superadmin = [
       {
-        email: 'muhammadmuawiya@meristemng.com',
-        name: 'Muhammad Muawiya Alkali',
-        phone: '+2347080407711',
+        email: superadminemail,
+        password: superadminpassword,
+        name: 'Super Admin',
       },
     ];
 
