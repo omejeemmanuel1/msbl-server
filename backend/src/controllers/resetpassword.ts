@@ -10,6 +10,51 @@ import {
   SendPasswordResetOTP,
 } from '../utils/notifications';
 
+// Change Password API
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { email, currentPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the provided current password matches the stored password
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid current password' });
+    }
+
+    // Check if the new password and confirm password match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    // Hash the new password
+    const salt = await GenerateSalt();
+    const hashedNewPassword = await GeneratePassword(newPassword, salt);
+
+    // Update the user's password
+
+    user.status = 'active';
+    await user.save();
+    await user.updateOne({ password: hashedNewPassword });
+
+    return res.status(200).json({
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -112,51 +157,6 @@ export const resetPassword = async (req: Request | any, res: Response) => {
     const hashedPassword = await GeneratePassword(newPassword, salt);
 
     await user.updateOne({ password: hashedPassword });
-
-    return res.status(200).json({
-      message: 'Password changed successfully',
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-// Change Password API
-export const changePassword = async (req: Request, res: Response) => {
-  try {
-    const { email, currentPassword, newPassword, confirmPassword } = req.body;
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Check if the provided current password matches the stored password
-    const isPasswordValid = await bcrypt.compare(
-      currentPassword,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid current password' });
-    }
-
-    // Check if the new password and confirm password match
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
-    }
-
-    // Hash the new password
-    const salt = await GenerateSalt();
-    const hashedNewPassword = await GeneratePassword(newPassword, salt);
-
-    // Update the user's password
-
-    user.status = 'active';
-    await user.save();
-    await user.updateOne({ password: hashedNewPassword });
 
     return res.status(200).json({
       message: 'Password changed successfully',

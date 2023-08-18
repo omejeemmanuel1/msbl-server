@@ -132,7 +132,6 @@ export const createUser = async (req: Request, res: Response) => {
       await SendActivationLink(
         email,
         `${firstName} ${lastName}`,
-        `http://localhost:3000/users/update/${newUser._id}`,
       );
     }
 

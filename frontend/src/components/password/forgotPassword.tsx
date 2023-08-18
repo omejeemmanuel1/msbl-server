@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import Logo from '../../assets/meri-logo.png';
 import axios from 'axios';
 import './forgotPassword.css';
+import { useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
 
 const forgotPassword: React.FC = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({email: ''});
 
   const handleChange = (e: any) => {
@@ -14,11 +16,16 @@ const forgotPassword: React.FC = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let response = await axios.post('http://localhost:3000/verify/forgot', {
+    let response = await axios.post('http://localhost:3000/password/forgot', {
       email: state.email
     });
     console.log(response);
-    swal("Check your mail for link to reset your password")
+    swal("OTP sent successfully. Check your mail for instructions to reset your password")
+
+    setTimeout(() => {
+      navigate("/verify-otp");
+    }, 2000); 
+
   }
 
   return (
@@ -33,11 +40,9 @@ const forgotPassword: React.FC = () => {
             <label htmlFor="email">Email</label>
             <input 
               type="email" 
-              placeholder="Enter Email" 
+              placeholder="Enter your email address" 
               name="email" 
               onChange={handleChange}
-              // value={email} 
-              // onChange={handleEmail} 
               required 
             />
             <button type="submit" className="btn">Reset Password</button>

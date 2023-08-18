@@ -1,10 +1,10 @@
 import React from "react";
-import ForgotPassword from "../../components/password/forgotPassword";
+import VerifyOtp from "../../components/password/verifyOtp";
 
 const VerifyOTPPage: React.FC = () => {
   return (
     <div>
-      <ForgotPassword />
+      <VerifyOtp />
     </div>
   );
 };

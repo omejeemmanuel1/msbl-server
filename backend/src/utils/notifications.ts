@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { jwtsecret, hostname, username, password, port } from '../config';
+import { jwtsecret, hostname, username, password, port, verificationLink } from '../config';
 
 export const GenerateSalt = async () => {
   return await bcrypt.genSalt();
@@ -57,7 +57,6 @@ export const ValidateToken = async (token: string) => {
 export const SendActivationLink = async (
   email: string,
   name: string,
-  verificationLink: string,
 ) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -81,7 +80,7 @@ export const SendActivationLink = async (
           </h1>
           <h2>Activate your account</h2>
           <p>
-            Your confirmation code is below — enter it in the browser window where you’ve started signing up for QuickGrade.
+            Your accout activation link is below — enter it in the browser window to change your password and activate your account.
           </p>
           <h1>${name}</h1>
           <p>Please click the following link to verify your account:</p>
