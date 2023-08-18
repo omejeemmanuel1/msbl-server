@@ -1,12 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export enum WorkflowStage {
-  Draft = 'Draft',
-  Review = 'Review',
-  Approval = 'Approval',
-  Execution = 'Execution',
-  Completed = 'Completed',
-  Cancelled = 'Cancelled',
+  Draft = 'Request Sent',
+  Review = 'In Progress',
+  Approval = 'Request Approved',
+  Declined = 'Request Declined',
+  Completed = 'Request Completed',
+  Cancelled = 'Request Cancelled',
 }
 
 export interface Comment {
