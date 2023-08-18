@@ -3,69 +3,63 @@ import Logo from "../../assets/meristem-logo.png";
 import Image from "../../assets/round.png";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import swal from "sweetalert";
+import { useData } from "../../context/authContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Data {
+  role: string;
   message: string;
   token: string;
 }
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useData();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  let [count, setCount] = useState<number>(0);
-
-  // const loginUrl = baseUrl + apiEndpoint;
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setPassword(e.target.value);
-  };
-  const headers = {
-    "Content-Type": "application/json",
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-      const url = "http://localhost:3000";
-      const response = await axios.post(
-        `${url}/users/login`,
-        {
-          email: email,
-          password: password,
-        },
-        {
-          headers,
-          withCredentials: true,
-        }
-      );
 
-      if (response.data) {
-        const data: Data = response.data;
-        console.log(response.data);
+      const user = {
+        email,
+        password,
+      };
+
+      const response = await login(user);
+
+      if (response) {
+        const data: Data = response;
+        console.log("Role:", data.role);
+        console.log("Data:", data);
         localStorage.setItem("token", data.token);
-        swal("Login", "Succesful", "success");
+        swal("Login", "Successful", "success");
 
-        setInterval(() => {
-          count++;
-          setCount(count + 1);
-          if (count == 2) {
-            navigate("/admin");
-          }
-        }, 1000);
+        if (user.email === "superadmin@meristemng.com") {
+          navigate("/super-admin");
+        } else if (data.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/other-users");
+        }
       } else {
         console.log("err");
+        toast.error("err");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      toast.error("error", error);
     }
   };
 
@@ -120,6 +114,7 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />;
     </div>
   );
 };

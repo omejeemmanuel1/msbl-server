@@ -11,7 +11,7 @@ interface User {
   lastName: string;
   department: string;
   role: string;
-  isActive: boolean;
+  status: string;
 }
 
 const Users: React.FC = () => {
@@ -33,16 +33,20 @@ const Users: React.FC = () => {
       }
     };
     fetchUsersData();
-  }, []);
+  }, [usersData]);
 
   const handleToggleActive = async (userId: number) => {
     try {
       const response = await toggleActive(userId);
       console.log("User active status toggled:", response);
-      toast.success("User activated successfully!");
+      if (response.status === "inactive") {
+        toast.success("User deactivated successfully!");
+      } else if (response.status === "active") {
+        toast.success("User activated successfully!");
+      }
       setUsersData((prevUsers) =>
         prevUsers.map((user) =>
-          user._id === userId ? { ...user, isActive: !user.isActive } : user
+          user._id === userId ? { ...user, status: response.status } : user
         )
       );
     } catch (error) {
@@ -87,11 +91,16 @@ const Users: React.FC = () => {
                 <td>
                   <button
                     className={`action-button ${
-                      user.isActive ? "active" : "inactive"
+                      user.status === "active" ? "active" : "inactive"
                     }`}
                     onClick={() => handleToggleActive(user._id)}
+                    title={
+                      user.status === "active"
+                        ? "Click to Deactivate"
+                        : "Click to Activate"
+                    }
                   >
-                    {user.isActive ? "Deactivate" : "Activate"}
+                    {user.status === "active" ? "Deactivate" : "Activate"}
                   </button>
                 </td>
               </tr>

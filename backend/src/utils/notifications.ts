@@ -10,9 +10,19 @@ export const GeneratePassword = async (password: string, salt: string) => {
   return await bcrypt.hash(password, salt);
 };
 
-export const GenerateToken = async (email: string, res: Response | any) => {
+export const GenerateToken = async (
+  email: string,
+  firstName: string,
+  lastName: string,
+  id: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  res: Response | any,
+) => {
   const payload = {
     email: email,
+    firstName: firstName,
+    lastName: lastName,
+    _id: id,
   };
 
   try {

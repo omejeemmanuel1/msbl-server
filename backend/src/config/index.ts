@@ -9,3 +9,5 @@ export const connectionstring = String(process.env.MONGODB_URI);
 export const superadminpassword = String(process.env.SUPER_ADMIN_PASSWORD);
 
 export const superadminemail = String(process.env.SUPER_ADMIN);
+
+export const defaultPassword = String(process.env.Default);

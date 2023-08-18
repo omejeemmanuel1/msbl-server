@@ -10,15 +10,17 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
-import { superadminemail, superadminpassword } from '../config';
+import {
+  superadminemail,
+  superadminpassword,
+  // defaultPassword,
+} from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-
-    const token = await GenerateToken(email, res);
 
     const formValidation = loginValidator.validate(req.body, variables);
 
@@ -42,6 +44,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     if (admin) {
+      const token = await GenerateToken(email, '', '', '', res); // Pass null for firstName and lastName
       return res
         .status(200)
         .json({ message: 'Super Admin logged in Successfully', token });
@@ -52,10 +55,17 @@ export const login = async (req: Request, res: Response) => {
     if (!existingUser) {
       return res.status(400).json({ error: 'User not found' });
     }
+
     if (existingUser.status !== 'active') {
-      return res.status(403).json({
-        error: 'Your account is deactivated, kindly contact your admin',
-      });
+      if (existingUser.role === 'admin') {
+        // Update the admin user's status to "active"
+        existingUser.status = 'active';
+        await existingUser.save();
+      } else {
+        return res.status(403).json({
+          error: 'Your account is deactivated, kindly contact your admin',
+        });
+      }
     }
 
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
@@ -63,15 +73,83 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Incorrect password' });
     }
 
+    const token = await GenerateToken(
+      email,
+      existingUser.firstName,
+      existingUser.lastName,
+      existingUser.id,
+      res,
+    ); // Pass firstName and lastName
     return res.status(200).json({
       message: 'Logged in successfully',
       token,
+      role: existingUser.role,
+      existingUser,
     });
   } catch (error) {
     console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+// export const login = async (req: Request, res: Response) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const token = await GenerateToken(email, res);
+
+//     const formValidation = loginValidator.validate(req.body, variables);
+
+//     if (formValidation.error) {
+//       return res
+//         .status(400)
+//         .json({ Error: formValidation.error.details[0].message });
+//     }
+
+//     // If user is SuperAdmin
+//     const superadmin = [
+//       {
+//         email: superadminemail,
+//         password: superadminpassword,
+//         name: 'Super Admin',
+//       },
+//     ];
+
+//     const admin = superadmin.find(
+//       (admin) => admin.email === email && admin.password === password,
+//     );
+
+//     if (admin) {
+//       return res
+//         .status(200)
+//         .json({ message: 'Super Admin logged in Successfully', token });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+
+//     if (!existingUser) {
+//       return res.status(400).json({ error: 'User not found' });
+//     }
+//     if (existingUser.status !== 'active') {
+//       return res.status(403).json({
+//         error: 'Your account is deactivated, kindly contact your admin',
+//       });
+//     }
+
+//     const passwordMatch = await bcrypt.compare(password, existingUser.password);
+//     if (!passwordMatch) {
+//       return res.status(401).json({ error: 'Incorrect password' });
+//     }
+
+//     return res.status(200).json({
+//       message: 'Logged in successfully',
+//       token,
+//     });
+//   } catch (error) {
+//     console.error('Error logging in user:', error);
+//     return res.status(500).json({ error: 'Internal server error' });
+//   }
+// };
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -163,6 +241,23 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
     res.json(allUsers);
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const fetchSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findOne({ id });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

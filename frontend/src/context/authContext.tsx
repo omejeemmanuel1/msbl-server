@@ -4,6 +4,16 @@ import { apiPost, apiGet } from "./axios";
 export const dataContext = createContext<undefined | any>(undefined);
 
 const DataProvider = ({ children }: any) => {
+  const login = async (user: any) => {
+    try {
+      const response = await apiPost("/users/login", user);
+      return response.data;
+    } catch (error) {
+      console.error("Error logging in:", error);
+      throw error;
+    }
+  };
+
   const createAdmin = async (admin: any) => {
     try {
       const response = await apiPost("/users/create-admin", admin);
@@ -30,6 +40,17 @@ const DataProvider = ({ children }: any) => {
       return response.data;
     } catch (error) {
       console.error("Error fetching users:", error);
+      throw error;
+    }
+  };
+
+  const fetchSingleUser = async (userId: string) => {
+    try {
+      const response = await apiGet(`/fetchSingleUser/${userId}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
       throw error;
     }
   };
@@ -67,6 +88,8 @@ const DataProvider = ({ children }: any) => {
   return (
     <dataContext.Provider
       value={{
+        login,
+        fetchSingleUser,
         createAdmin,
         createUser,
         fetchUsers,

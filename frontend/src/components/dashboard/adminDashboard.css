@@ -364,14 +364,28 @@
 }
 
 .active {
-  background-color: #d9534f;
+  background-color: #21502c;
   color: white;
 }
 
 .inactive {
-  background-color: #21502c;
+  background-color: #d9534f;
   color: white;
 }
+/* .action-button[title]:hover::before {
+  content: attr(title);
+  position: absolute;
+  top: 180px;
+  left: 1000px;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+} */
 
 /* Responsive adjustments for mobile screens */
 @media (max-width: 768px) {

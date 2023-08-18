@@ -5,19 +5,21 @@ import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { FiUsers } from "react-icons/Fi";
 import { HiOutlineMenu, HiOutlineOfficeBuilding } from "react-icons/Hi";
 import "./adminDashboard.css";
-import { useData } from "../../context/authContext";
+import jwt_decode from "jwt-decode";
+
+interface DecodedToken {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 const NavBar: React.FC = () => {
-  const { fetchUserData } = useData();
-  const [userData, setUserData] = useState<any>(null);
   const navigate = useNavigate();
-
+  const [userData, setUserData] = useState<DecodedToken | null>(null);
   const [showMenu, setShowMenu] = useState(false);
 
   const handleToggleMenu = () => {
-    console.log("Before update:", showMenu);
     setShowMenu(!showMenu);
-    console.log("After update:", showMenu);
   };
 
   const getInitials = (name: string): string => {
@@ -28,8 +30,14 @@ const NavBar: React.FC = () => {
   useEffect(() => {
     const fetchLoggedInUserData = async () => {
       try {
-        const user = await fetchUserData();
-        setUserData(user);
+        const token = localStorage.getItem("token");
+        console.log("Token:", token);
+        if (token) {
+          const decodedToken: DecodedToken = jwt_decode(token);
+          console.log("Decoded Token:", decodedToken);
+
+          setUserData(decodedToken);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -41,7 +49,6 @@ const NavBar: React.FC = () => {
     localStorage.clear();
     navigate("/login");
   };
-
   return (
     <>
       <header className="top-bar">
@@ -75,7 +82,7 @@ const NavBar: React.FC = () => {
               </Link>
             </li>
             <li style={{ borderBottom: "none" }}>
-              {userData ? userData.name : ""}
+              {userData ? userData.firstName : "Loading..."}
             </li>
             <li onClick={handleLogout} className="link">
               Logout
@@ -107,9 +114,16 @@ const NavBar: React.FC = () => {
         <div className="nav">
           <ul className="nav-menu">
             <div className="user-initials">
-              {userData ? getInitials(userData.name) : ""}
+              {userData
+                ? getInitials(userData.firstName + " " + userData.lastName)
+                : ""}
             </div>
-            <li className="nav-item">{userData ? userData.name : ""}</li>
+            <li className="nav-item">
+              {userData
+                ? `${userData.firstName} ${userData.lastName}`
+                : "Loading..."}
+            </li>
+
             <li className="nav-item" onClick={handleLogout}>
               Logout
             </li>
