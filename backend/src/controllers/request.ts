@@ -61,7 +61,7 @@ export const createRequest = async (req: Request | any, res: Response) => {
     });
 
     // Send status of request to client
-    await SendRequestStatusMail(clientEmail, clientName, newRequest.status);
+    await SendRequestStatusMail(clientEmail, clientName, newRequest.stage);
 
     return res
       .status(200)
@@ -77,8 +77,6 @@ export const updateRequest = async (req: Request | any, res: Response) => {
     const requestId = req.params.id;
     const { comment } = req.body;
     const { email } = req.user;
-
-    console.log(requestId, email);
 
     // Check user authentication
     if (!email) {
@@ -107,9 +105,17 @@ export const updateRequest = async (req: Request | any, res: Response) => {
     };
 
     requestToUpdate.comments.push(newComment);
+    requestToUpdate.stage = WorkflowStage.Review;
 
     // Save the updated request
     await requestToUpdate.save();
+
+    // Send status of request to client
+    await SendRequestStatusMail(
+      requestToUpdate.clientEmail,
+      requestToUpdate.clientName,
+      requestToUpdate.stage,
+    );
 
     return res.status(200).json({ message: 'Request updated successfully' });
   } catch (err) {
@@ -158,34 +164,114 @@ export const searchRequest = async (req: Request, res: Response) => {
 };
 
 // Approve a request
-export const approveRequest = async (req: Request, res: Response) => {
+export const approveRequest = async (req: Request | any, res: Response) => {
   try {
     const requestId = req.params.id;
-    const updatedRequest = await Requests.findByIdAndUpdate(
-      requestId,
-      { $set: { status: 'Approved' } },
-      { new: true },
+    const { email } = req.user;
+
+    // Check user authentication
+    if (!email) {
+      return res
+        .status(403)
+        .json({ error: 'Authentication failed. User not authorized.' });
+    }
+
+    // Find user making the approval based on authenticated user's email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({ error: 'User not found or invalid.' });
+    }
+
+    let updatedStatus = '';
+    let updatedStage = '';
+    if (user.role === 'checker') {
+      updatedStatus = 'Pending';
+      updatedStage = WorkflowStage.Approval;
+    } else if (user.role === 'initiator') {
+      updatedStatus = 'Approved';
+      updatedStage = WorkflowStage.Completed;
+    } else {
+      return res.status(403).json({ error: 'Unauthorized role.' });
+    }
+
+    const updateFields = {
+      stage: updatedStage,
+      status: updatedStatus,
+    };
+
+    const options = { new: true };
+    const updatedRequest: RequestDocument | null =
+      await Requests.findByIdAndUpdate(
+        requestId,
+        { $set: updateFields },
+        options,
+      );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Send status of request to client
+    await SendRequestStatusMail(
+      updatedRequest.clientEmail,
+      updatedRequest.clientName,
+      updatedRequest.stage,
     );
-    res.json(updatedRequest);
+
+    return res.json(updatedRequest);
   } catch (error) {
     console.error('Error approving request:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 // Decline a request
-export const declineRequest = async (req: Request, res: Response) => {
+export const declineRequest = async (req: Request | any, res: Response) => {
   try {
     const requestId = req.params.id;
-    const updatedRequest = await Requests.findByIdAndUpdate(
-      requestId,
-      { $set: { status: 'Declined' } },
-      { new: true },
+    const { email } = req.user;
+
+    // Check user authentication
+    if (!email) {
+      return res
+        .status(403)
+        .json({ error: 'Authentication failed. User not authorized.' });
+    }
+
+    // Find user making the decline based on authenticated user's email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({ error: 'User not found or invalid.' });
+    }
+
+    const updateFields = {
+      stage: WorkflowStage.Declined,
+      status: 'Declined',
+    };
+
+    const options = { new: true };
+    const updatedRequest: RequestDocument | null =
+      await Requests.findByIdAndUpdate(
+        requestId,
+        { $set: updateFields },
+        options,
+      );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Send status of request to client
+    await SendRequestStatusMail(
+      updatedRequest.clientEmail,
+      updatedRequest.clientName,
+      updatedRequest.stage,
     );
-    res.json(updatedRequest);
+
+    return res.json(updatedRequest);
   } catch (error) {
     console.error('Error declining request:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
