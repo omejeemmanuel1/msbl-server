@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const changePassword: React.FC = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState({ password: "", confirmPassword: "" });
+  const [data, setData] = useState({ newPassword: "", confirmPassword: "" });
 
   const handleChange = (e: any) => {
     const {
@@ -15,16 +15,16 @@ const changePassword: React.FC = () => {
     setData((details) => ({ ...details, [name]: value }));
   };
 
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
       let response = await axios.post(
-        `http://localhost:3000/verify/reset?token=${token}`,
+        'http://localhost:3000/password/reset',
         {
-          oldPassword: data.password,
-          newPassword: data.confirmPassword,
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
         }
       );
       if (response.status === 201) {
@@ -44,12 +44,12 @@ const changePassword: React.FC = () => {
           <img src={Logo} alt="logo" />
         </div>
         <form onSubmit={handleSubmit} className="changepass_center" action="">
-          <h4>Change Password</h4>
+          <h4>Reset Password</h4>
 
           <label htmlFor="password">New Password</label>
           <input
             type="password"
-            placeholder="Enter New Password"
+            placeholder="Enter your new password"
             name="password"
             onChange={handleChange}
             required
@@ -58,14 +58,14 @@ const changePassword: React.FC = () => {
           <label htmlFor="confirm_password">Confirm Password</label>
           <input
             type="password"
-            placeholder="Confirm New Password"
+            placeholder="Confirm your new password"
             name="confirmPassword"
             onChange={handleChange}
             required
           />
 
           <button type="submit" className="btn">
-            Change Password
+            Reset Password
           </button>
 
           <a href="/login">Go back to login</a>
