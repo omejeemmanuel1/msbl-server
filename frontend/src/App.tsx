@@ -8,6 +8,7 @@ import CreateDepartment from "./components/adminDashboard/CreateDepartment";
 import Users from "./components/adminDashboard/Users";
 import DataProvider from "./context/authContext";
 import InitiatorPage from "./pages/InitiatorDashboard/InitiatorPage";
+import SingleRequest from "./components/singleRequest/SingleRequest";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/createDepartment" element={<CreateDepartment />} />
             <Route path="/users" element={<Users />} />
             <Route path="/InitiatorDashboard" element={<InitiatorPage />} />
+            <Route path="/SingleRequest" element={<SingleRequest />} />
           </Routes>
         </Router>
       </DataProvider>
