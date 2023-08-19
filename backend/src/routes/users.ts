@@ -7,7 +7,7 @@ import {
   fetchAllUsers,
   fetchSingleUser,
 } from '../controllers/users';
-import { isAdmin } from '../middlewares/authorizations';
+import { isAdmin, isSuperAdmin } from '../middlewares/authorizations';
 
 const router = express.Router();
 

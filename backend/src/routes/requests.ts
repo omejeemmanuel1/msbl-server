@@ -7,6 +7,7 @@ import {
   declineRequest,
   fetchRequest,
   fetchAllRequests,
+  exportRequests,
 } from '../controllers/request';
 import { isUser, isInitiator } from '../middlewares/authorizations';
 
@@ -25,5 +26,7 @@ router.get('/search', isUser, searchRequest);
 router.get('/fetch/:id', isUser, fetchRequest);
 
 router.get('/fetch-all', isUser, fetchAllRequests);
+
+router.get('/export-requests', exportRequests);
 
 export default router;

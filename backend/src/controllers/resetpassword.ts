@@ -14,7 +14,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         message: 'User not found, kindly register first',
@@ -24,7 +24,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const verification = await Verification.findOne({ userId: user.id });
 
     const { otp, expiry } = await GenerateOtp();
-    const token = await GenerateToken(email, res);
+    const token = await GenerateToken(email, '', '', '', res);
     await SendPasswordResetOTP(email, otp);
 
     if (verification) {

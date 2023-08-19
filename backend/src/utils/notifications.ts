@@ -50,6 +50,7 @@ export const GenerateToken = async (
 
 export const ValidateToken = async (token: string) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decodedToken: any = jwt.verify(token, jwtsecret);
 
     const expiry = new Date(decodedToken.expiry);
