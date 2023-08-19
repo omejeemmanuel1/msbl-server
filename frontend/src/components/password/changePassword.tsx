@@ -37,48 +37,50 @@ const changePassword: React.FC = () => {
   };
 
   return (
-    <div className="changepass_container">
-      <div className="changepass_main">
-        <div className="logo_container">
-          <div></div>
-          <img src={Logo} alt="logo" />
+    <div className="changepass_page">
+      <div className="changepass_container">
+        <div className="changepass_main">
+          <div className="logo_container">
+            <div></div>
+            <img src={Logo} alt="logo" />
+          </div>
+          <form onSubmit={handleSubmit} className="changepass_center" action="">
+            <h4>Change Password</h4>
+
+            <label htmlFor="password">Old Password</label>
+            <input
+              type="password"
+              placeholder="Enter the default password"
+              name="password"
+              onChange={handleChange}
+              required
+            />
+
+            <label htmlFor="password">New Password</label>
+            <input
+              type="password"
+              placeholder="Enter a new password"
+              name="password"
+              onChange={handleChange}
+              required
+            />
+
+            <label htmlFor="confirm_password">Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Confirm your new password"
+              name="confirmPassword"
+              onChange={handleChange}
+              required
+            />
+
+            <button type="submit" className="btn">
+              Change Password
+            </button>
+
+            {/* <a href="/login">Proceed to login</a> */}
+          </form>
         </div>
-        <form onSubmit={handleSubmit} className="changepass_center" action="">
-          <h4>Change Password</h4>
-
-          <label htmlFor="password">Old Password</label>
-          <input
-            type="password"
-            placeholder="Enter the default password"
-            name="password"
-            onChange={handleChange}
-            required
-          />
-
-          <label htmlFor="password">New Password</label>
-          <input
-            type="password"
-            placeholder="Enter a new password"
-            name="password"
-            onChange={handleChange}
-            required
-          />
-
-          <label htmlFor="confirm_password">Confirm Password</label>
-          <input
-            type="password"
-            placeholder="Confirm your new password"
-            name="confirmPassword"
-            onChange={handleChange}
-            required
-          />
-
-          <button type="submit" className="btn">
-            Change Password
-          </button>
-
-          {/* <a href="/login">Proceed to login</a> */}
-        </form>
       </div>
     </div>
   );
