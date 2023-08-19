@@ -1,8 +1,5 @@
 import express from 'express';
-import {
-  createDept,
-  fetchDepartment,
-} from '../controllers/departments';
+import { createDept, fetchDepartment } from '../controllers/departments';
 
 const router = express.Router();
 

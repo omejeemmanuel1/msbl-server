@@ -6,9 +6,14 @@ import {
   Comment,
 } from '../models/requests';
 import { requestValidator } from '../utils/utilities';
-import { SendRequestStatusMail } from '../utils/notifications';
+import {
+  SendClientRequestStatus,
+  SendInitiatorRequestStatus,
+  SendOperationsRequestStatus,
+} from '../utils/notifications';
 import { User } from '../models/users';
 
+// Create a request
 export const createRequest = async (req: Request | any, res: Response) => {
   try {
     const {
@@ -61,7 +66,26 @@ export const createRequest = async (req: Request | any, res: Response) => {
     });
 
     // Send status of request to client
-    await SendRequestStatusMail(clientEmail, clientName, newRequest.stage);
+    await SendClientRequestStatus(clientEmail, clientName, newRequest.stage);
+
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      initiator.email,
+      initiator.lastName,
+      newRequest.stage,
+    );
+
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        newRequest.stage,
+      );
+    }
 
     return res
       .status(200)
@@ -72,11 +96,29 @@ export const createRequest = async (req: Request | any, res: Response) => {
   }
 };
 
+//Update a request
 export const updateRequest = async (req: Request | any, res: Response) => {
   try {
     const requestId = req.params.id;
-    const { comment } = req.body;
+    const {
+      clientName,
+      clientEmail,
+      clientPhone,
+      type,
+      docURL,
+      authURL,
+      narration,
+    } = req.body;
+
     const { email } = req.user;
+
+    // Validate request body
+    const validationResult = requestValidator.validate(req.body);
+    if (validationResult.error) {
+      return res.status(400).json({
+        error: validationResult.error.details[0].message,
+      });
+    }
 
     // Check user authentication
     if (!email) {
@@ -85,46 +127,56 @@ export const updateRequest = async (req: Request | any, res: Response) => {
         .json({ error: 'Authentication failed. User not authorized.' });
     }
 
-    // Find user making the comment based on authenticated user's email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(403).json({ error: 'User not found or invalid.' });
+    // Find initiator based on authenticated user's email
+    const initiator = await User.findOne({ email });
+    if (!initiator) {
+      return res.status(403).json({ error: 'Initiator not found or invalid.' });
     }
 
-    // Find the request to update
-    const requestToUpdate = await Requests.findById(requestId);
-    if (!requestToUpdate) {
+    // Update the request
+    const updatedRequest = await Requests.findByIdAndUpdate(
+      requestId,
+      {
+        clientName,
+        clientEmail,
+        clientPhone,
+        type,
+        docURL,
+        authURL,
+        narration,
+      },
+      { new: true },
+    );
+
+    if (!updatedRequest) {
       return res.status(404).json({ error: 'Request not found.' });
     }
 
-    // Add the new comment to the comments array with timestamp and user
-    const newComment: Comment = {
-      text: comment,
-      timestamp: new Date(),
-      user: `${user.firstName} ${user.lastName}`,
-    };
-
-    requestToUpdate.comments.push(newComment);
-    requestToUpdate.stage = WorkflowStage.Review;
-    requestToUpdate.status = 'Pending';
-
-    // Save the updated request
-    await requestToUpdate.save();
-
     // Send status of request to client
-    await SendRequestStatusMail(
-      requestToUpdate.clientEmail,
-      requestToUpdate.clientName,
-      requestToUpdate.stage,
+    await SendClientRequestStatus(
+      clientEmail,
+      clientName,
+      updatedRequest.stage,
     );
 
-    return res.status(200).json({ message: 'Request updated successfully' });
-  } catch (err) {
-    console.error(err);
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      initiator.email,
+      initiator.lastName,
+      updatedRequest.stage,
+    );
+
+    return res.status(200).json({
+      message: 'Request updated successfully',
+      request: updatedRequest,
+    });
+  } catch (error) {
+    console.error('Error updating request:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+//Search a request by some properties
 export const searchRequest = async (req: Request, res: Response) => {
   try {
     const { status, type, date, name } = req.query;
@@ -213,9 +265,16 @@ export const approveRequest = async (req: Request | any, res: Response) => {
     }
 
     // Send status of request to client
-    await SendRequestStatusMail(
+    await SendClientRequestStatus(
       updatedRequest.clientEmail,
       updatedRequest.clientName,
+      updatedRequest.stage,
+    );
+
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      user.email,
+      user.lastName,
       updatedRequest.stage,
     );
 
@@ -263,9 +322,16 @@ export const declineRequest = async (req: Request | any, res: Response) => {
     }
 
     // Send status of request to client
-    await SendRequestStatusMail(
+    await SendClientRequestStatus(
       updatedRequest.clientEmail,
       updatedRequest.clientName,
+      updatedRequest.stage,
+    );
+
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      user.email,
+      user.lastName,
       updatedRequest.stage,
     );
 
@@ -277,7 +343,7 @@ export const declineRequest = async (req: Request | any, res: Response) => {
 };
 
 // Fetch a specific request by ID
-export const fetchRequest = async (req: Request, res: Response) => {
+export const fetchRequestbyID = async (req: Request, res: Response) => {
   try {
     const requestId = req.params.id;
     const request = await Requests.findById(requestId);
@@ -300,5 +366,131 @@ export const fetchAllRequests = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Add comment to a request
+export const addComment = async (req: Request | any, res: Response) => {
+  try {
+    const requestId = req.params.id;
+    const { comment } = req.body;
+    const { email } = req.user;
+
+    // Check user authentication
+    if (!email) {
+      return res
+        .status(403)
+        .json({ error: 'Authentication failed. User not authorized.' });
+    }
+
+    // Find user making the comment based on authenticated user's email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({ error: 'User not found or invalid.' });
+    }
+
+    // Find the request to update
+    const requestToUpdate = await Requests.findById(requestId);
+    if (!requestToUpdate) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Add the new comment to the comments array with timestamp and user
+    const newComment: Comment = {
+      text: comment,
+      timestamp: new Date(),
+      user: `${user.firstName} ${user.lastName}`,
+    };
+
+    requestToUpdate.comments.push(newComment);
+    requestToUpdate.stage = WorkflowStage.Review;
+    requestToUpdate.status = 'Pending';
+
+    // Save the updated request
+    await requestToUpdate.save();
+
+    // Send status of request to client
+    await SendClientRequestStatus(
+      requestToUpdate.clientEmail,
+      requestToUpdate.clientName,
+      requestToUpdate.stage,
+    );
+
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      user.email,
+      user.lastName,
+      requestToUpdate.stage,
+    );
+
+    return res.status(200).json({ message: 'Request updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+//Edit a comment
+export const editComment = async (req: Request | any, res: Response) => {
+  try {
+    const requestId = req.params.id;
+    const { newText } = req.body;
+    const { email } = req.user;
+
+    // Check user authentication
+    if (!email) {
+      return res
+        .status(403)
+        .json({ error: 'Authentication failed. User not authorized.' });
+    }
+
+    // Find user making the comment based on authenticated user's email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({ error: 'User not found or invalid.' });
+    }
+
+    // Find the request to update
+    const requestToUpdate = await Requests.findById(requestId);
+    if (!requestToUpdate) {
+      return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Find the comment index in the array
+    const commentIndex = requestToUpdate.comments.findIndex(
+      (comment) => comment.user === `${user.firstName} ${user.lastName}`,
+    );
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: 'Comment not found.' });
+    }
+
+    const commentToEdit = requestToUpdate.comments[commentIndex];
+
+    // Check if the comment was made by the same user
+    if (`${user.firstName} ${user.lastName}` !== commentToEdit.user) {
+      return res
+        .status(403)
+        .json({ error: 'You are not authorized to edit this comment.' });
+    }
+
+    // Update the comment's text
+    commentToEdit.text = newText;
+    commentToEdit.timestamp = new Date();
+
+    // Save the updated request
+    await requestToUpdate.save();
+
+    // Send status of request to Initiators
+    await SendInitiatorRequestStatus(
+      user.email,
+      user.lastName,
+      requestToUpdate.stage,
+    );
+
+    return res.status(200).json({ message: 'Comment updated successfully' });
+  } catch (error) {
+    console.error('Error editing comment:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };

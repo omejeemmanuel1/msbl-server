@@ -16,7 +16,7 @@ export const changePassword = async (req: Request, res: Response) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     const userId = req.params.id;
-    
+
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
