@@ -44,6 +44,20 @@ export const deptValidate = Joi.object({
   departmentName: Joi.string().required(),
 });
 
+export const requestValidator = Joi.object({
+  clientName: Joi.string().required(),
+  clientEmail: Joi.string().email().required(),
+  clientPhone: Joi.string().required(),
+  initiator: Joi.string(),
+  narration: Joi.string(),
+  type: Joi.string(),
+  stage: Joi.string(),
+  docURL: Joi.string(),
+  authURL: Joi.string(),
+  comments: Joi.any(),
+  status: Joi.any(),
+});
+
 export const variables = {
   abortEarly: false,
   errors: {

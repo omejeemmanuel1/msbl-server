@@ -4,6 +4,7 @@ import {
   GeneratePassword,
   GenerateSalt,
   GenerateToken,
+  SendActivationLink,
 } from '../utils/notifications';
 import {
   registerValidator,
@@ -11,9 +12,9 @@ import {
   variables,
 } from '../utils/utilities';
 import {
+  defaultpassword,
   superadminemail,
   superadminpassword,
-  // defaultPassword,
 } from '../config';
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
@@ -187,7 +188,7 @@ export const createUser = async (req: Request, res: Response) => {
       }
 
       const salt = await GenerateSalt();
-      const hashedPassword = await GeneratePassword('Passw0rd!', salt);
+      const hashedPassword = await GeneratePassword(defaultpassword, salt);
 
       const newUser: UserDocument = new User({
         firstName,
@@ -201,6 +202,12 @@ export const createUser = async (req: Request, res: Response) => {
 
       const savedUser = await newUser.save();
       savedUsers.push(savedUser);
+
+      await SendActivationLink(
+        email,
+        `${firstName} ${lastName}`,
+        `http://localhost:3000/users/update/${newUser._id}`,
+      );
     }
 
     res.status(201).json(savedUsers);

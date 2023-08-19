@@ -3,10 +3,11 @@ import LoginPage from "./pages/login/login";
 import AdminPage from "./pages/AdminDashboard/AdminPage";
 import SuperAdminPage from "./pages/AdminDashboard/SuperAdminPage";
 import "./App.css";
-import UserForm from "./components/dashboard/UserForm";
-import CreateDepartment from "./components/dashboard/CreateDepartment";
-import Users from "./components/dashboard/Users";
+import UserForm from "./components/adminDashboard/UserForm";
+import CreateDepartment from "./components/adminDashboard/CreateDepartment";
+import Users from "./components/adminDashboard/Users";
 import DataProvider from "./context/authContext";
+import InitiatorPage from "./pages/InitiatorDashboard/InitiatorPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/userForm" element={<UserForm />} />
             <Route path="/createDepartment" element={<CreateDepartment />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/InitiatorDashboard" element={<InitiatorPage />} />
           </Routes>
         </Router>
       </DataProvider>

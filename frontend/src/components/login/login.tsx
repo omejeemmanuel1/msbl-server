@@ -45,13 +45,18 @@ const Login: React.FC = () => {
         console.log("Data:", data);
         localStorage.setItem("token", data.token);
         swal("Login", "Successful", "success");
+        swal("Login", "Successful", "success");
 
         if (user.email === "superadmin@meristemng.com") {
           navigate("/super-admin");
         } else if (data.role === "admin") {
           navigate("/admin");
+        } else if (data.role === "initiator") {
+          navigate("/initiatorDashboard");
+        } else if (data.role === "checkerDashboard") {
+          navigate("/checker");
         } else {
-          navigate("/other-users");
+          navigate("/requesterDashboard");
         }
       } else {
         console.log("err");
@@ -68,13 +73,12 @@ const Login: React.FC = () => {
       <div className="login-container">
         <div className="login-main">
           <div className="login-logo_container">
-            <div></div>
             <img src={Logo} alt="login-logo" />
           </div>
 
           <div className="login-form_container">
             <div className="login-img_wrapper">
-              <h2>
+              <h2 className="h2">
                 MSBL <br /> Operations <br />
                 Work flow
               </h2>
