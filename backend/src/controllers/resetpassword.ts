@@ -13,9 +13,11 @@ import {
 // Change Password API
 export const changePassword = async (req: Request, res: Response) => {
   try {
-    const { email, currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    const user = await User.findOne({ email });
+    const userId = req.params.id;
+    
+    const user = await User.findOne({ _id: userId });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

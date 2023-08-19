@@ -132,6 +132,7 @@ export const createUser = async (req: Request, res: Response) => {
       await SendActivationLink(
         email,
         `${firstName} ${lastName}`,
+        savedUser.id,
       );
     }
 
