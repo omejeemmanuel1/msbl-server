@@ -106,6 +106,7 @@ export const updateRequest = async (req: Request | any, res: Response) => {
 
     requestToUpdate.comments.push(newComment);
     requestToUpdate.stage = WorkflowStage.Review;
+    requestToUpdate.status = 'Pending';
 
     // Save the updated request
     await requestToUpdate.save();
