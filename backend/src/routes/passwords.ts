@@ -4,7 +4,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyOTP,
-} from '../controllers/resetpassword';
+} from '../controllers/passwords';
 import { isUser } from '../middlewares/authorizations';
 
 const router = express.Router();
