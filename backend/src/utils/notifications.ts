@@ -70,8 +70,9 @@ export const SendActivationLink = async (
     });
 
     const mailOptions = {
+      from: `"MSBL" <${username}>`,
       // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
+      // from: 'MSBL <quickgrade.hq@gmail.com>',
       to: email,
       subject: 'Account Activation',
       html: `
