@@ -10,6 +10,19 @@ import {
   verificationLink,
 } from '../config';
 
+// Constants
+const OTP_EXPIRY_TIME = 30 * 60 * 1000;
+
+// Email transporter configuration
+const emailTransporter = nodemailer.createTransport({
+  host: hostname,
+  port: port,
+  auth: {
+    user: username,
+    pass: password,
+  },
+});
+
 export const GenerateSalt = async () => {
   return await bcrypt.genSalt();
 };
@@ -21,7 +34,7 @@ export const GeneratePassword = async (password: string, salt: string) => {
 export const GenerateOtp = () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   const expiry = new Date();
-  expiry.setTime(new Date().getTime() + 30 * 60 * 1000);
+  expiry.setTime(new Date().getTime() + OTP_EXPIRY_TIME);
   return { otp, expiry };
 };
 
@@ -41,7 +54,7 @@ export const GenerateToken = async (email: string, res: Response | any) => {
     return token;
   } catch (error) {
     console.error(error);
-    throw new Error('Error generating password reset token');
+    throw new Error('Error generating token');
   }
 };
 
@@ -53,11 +66,27 @@ export const ValidateToken = async (token: string) => {
     if (expiry.getTime() < new Date().getTime()) {
       return { valid: false, email: null };
     }
-    console.log(decodedToken);
+
     return { valid: true, email: decodedToken.email };
   } catch (error) {
     console.error(error);
     return { valid: false, email: null };
+  }
+};
+
+export const SendEmail = async (to: string, subject: string, html: string) => {
+  try {
+    const mailOptions = {
+      from: 'MSBL <quickgrade.hq@gmail.com>',
+      to: to,
+      subject: subject,
+      html: html,
+    };
+
+    await emailTransporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error(`Error sending email: ${(error as Error).message}`);
+    throw new Error('Error sending email');
   }
 };
 
@@ -66,22 +95,8 @@ export const SendActivationLink = async (
   name: string,
   id: string,
 ) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: hostname,
-      port: port,
-      auth: {
-        user: username,
-        pass: password,
-      },
-    });
-
-    const mailOptions = {
-      // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
-      to: email,
-      subject: 'Account Activation',
-      html: `
+  const subject = 'Account Activation';
+  const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
             Welcome to Operations Work Flow
@@ -96,33 +111,13 @@ export const SendActivationLink = async (
           <p>Note that the link is only valid for a limited time.</p>
           <p>If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Error sending verification email:', error);
-    throw new Error('Error sending verification email');
-  }
+        `;
+  await SendEmail(email, subject, html);
 };
 
 export const SendPasswordResetOTP = async (email: string, otp: number) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: hostname,
-      port: port,
-      auth: {
-        user: username,
-        pass: password,
-      },
-    });
-
-    const mailOptions = {
-      // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
-      to: email,
-      subject: 'Password Reset OTP',
-      html: `
+  const subject = 'Account Activation';
+  const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <p>Your OTP to reset your password is:</p>
           <h1>${otp}</h1>
@@ -130,14 +125,8 @@ export const SendPasswordResetOTP = async (email: string, otp: number) => {
           <p>Note that the OTP is only valid for 30 minutes.</p>
           <p>If you did not make this request, please ignore this email.</p>
         </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error(error);
-    throw new Error('Error sending password reset OTP');
-  }
+        `;
+  await SendEmail(email, subject, html);
 };
 
 export const SendClientRequestStatus = async (
@@ -145,22 +134,8 @@ export const SendClientRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: hostname,
-      port: port,
-      auth: {
-        user: username,
-        pass: password,
-      },
-    });
-
-    const mailOptions = {
-      // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
-      to: email,
-      subject: 'Request Status Update',
-      html: `
+  const subject = 'Account Activation';
+  const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
             Meristem Operations Work Flow
@@ -172,14 +147,8 @@ export const SendClientRequestStatus = async (
           <p>Please contact us at operations@meristemng.com if you have any questions or concerns about your request.</p>
           <p>If you didn’t request this email or have any questions, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Error sending request status email:', error);
-    throw new Error('Error sending request status email');
-  }
+        `;
+  await SendEmail(email, subject, html);
 };
 
 export const SendInitiatorRequestStatus = async (
@@ -187,22 +156,8 @@ export const SendInitiatorRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: hostname,
-      port: port,
-      auth: {
-        user: username,
-        pass: password,
-      },
-    });
-
-    const mailOptions = {
-      // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
-      to: email,
-      subject: 'Request Status Update',
-      html: `
+  const subject = 'Account Activation';
+  const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
             Meristem Operations Work Flow
@@ -212,14 +167,8 @@ export const SendInitiatorRequestStatus = async (
           <p>The status of the request you are working on has been updated.</p>
           <h2>${status}</h2>
        </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Error sending request status email:', error);
-    throw new Error('Error sending request status email');
-  }
+       `;
+  await SendEmail(email, subject, html);
 };
 
 export const SendOperationsRequestStatus = async (
@@ -227,22 +176,8 @@ export const SendOperationsRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: hostname,
-      port: port,
-      auth: {
-        user: username,
-        pass: password,
-      },
-    });
-
-    const mailOptions = {
-      // from: 'MSBL <noreply@meristemng.com>',
-      from: 'MSBL <quickgrade.hq@gmail.com>',
-      to: email,
-      subject: 'Request Status Update',
-      html: `
+  const subject = 'Account Activation';
+  const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
             Meristem Operations Work Flow
@@ -252,12 +187,6 @@ export const SendOperationsRequestStatus = async (
           <p>The status of the request you are working on has been updated.</p>
           <h2>${status}</h2>
        </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Error sending request status email:', error);
-    throw new Error('Error sending request status email');
-  }
+       `;
+  await SendEmail(email, subject, html);
 };

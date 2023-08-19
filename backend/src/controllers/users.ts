@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { User, UserDocument } from '../models/users';
+import bcrypt from 'bcryptjs';
+import emailValidator from 'email-validator';
 import {
-  GeneratePassword,
   GenerateSalt,
   GenerateToken,
+  GeneratePassword,
   SendActivationLink,
 } from '../utils/notifications';
 import {
@@ -11,15 +12,14 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
+import { User, UserDocument } from '../models/users';
 import {
   defaultpassword,
   superadminemail,
   superadminpassword,
 } from '../config';
-import emailValidator from 'email-validator';
-import bcrypt from 'bcryptjs';
 
-//Login
+// Login
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -35,22 +35,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // If user is SuperAdmin
-    const superadmin = [
-      {
-        email: superadminemail,
-        password: superadminpassword,
-        name: 'Super Admin',
-      },
-    ];
-
-    const admin = superadmin.find(
-      (admin) => admin.email === email && admin.password === password,
-    );
-
-    if (admin) {
+    const isAdmin = isSuperAdmin(email, password);
+    if (isAdmin) {
       return res
         .status(200)
-        .json({ message: 'Super Admin logged in Successfully', token });
+        .json({ message: 'SuperAdmin logged in Successfully', token });
     }
 
     const existingUser = await User.findOne({ email });
@@ -77,6 +66,11 @@ export const login = async (req: Request, res: Response) => {
     console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
+};
+
+// Check if user is SuperAdmin
+const isSuperAdmin = (email: string, password: string): boolean => {
+  return email === superadminemail && password === superadminpassword;
 };
 
 // Create a user
@@ -141,7 +135,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-//Update user properties
+// Update user properties
 export const updateUser = async (req: Request | any, res: Response) => {
   try {
     const userId = req.params.id;
@@ -190,7 +184,7 @@ export const updateUser = async (req: Request | any, res: Response) => {
   }
 };
 
-//Activate and Deactivate a user
+// Activate and Deactivate a user
 export const toggleActivation = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -215,7 +209,7 @@ export const toggleActivation = async (req: Request, res: Response) => {
   }
 };
 
-//Delete a user
+// Delete a user
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
@@ -236,7 +230,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-//Fetch all users
+// Fetch all users
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const allUsers = await User.find();
@@ -248,6 +242,7 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+// Logout
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie('token');
   res.status(200).json({
