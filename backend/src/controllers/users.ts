@@ -134,7 +134,7 @@ export const createUser = async (req: Request, res: Response) => {
       await SendActivationLink(email, `${firstName} ${lastName}`, savedUser.id);
     }
 
-    res.status(201).json(savedUsers);
+    res.status(201).json({ message: 'User created successfully', savedUsers });
   } catch (error) {
     console.error('Error creating users:', error);
     res.status(500).json({ message: 'Server error' });
@@ -156,7 +156,9 @@ export const updateUser = async (req: Request | any, res: Response) => {
     if (userToUpdate.email !== email) {
       const existingUserWithEmail = await User.findOne({ email });
       if (existingUserWithEmail) {
-        return res.status(400).json({ error: 'Email is already in use.' });
+        return res
+          .status(400)
+          .json({ error: `The email address ${email} is already in use.` });
       }
     }
 
@@ -179,7 +181,9 @@ export const updateUser = async (req: Request | any, res: Response) => {
 
     await userToUpdate.save();
 
-    return res.status(200).json({ message: 'User updated successfully' });
+    return res
+      .status(200)
+      .json({ message: 'User updated successfully', userToUpdate });
   } catch (error) {
     console.error('Error updating user:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -223,7 +227,9 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     await User.deleteOne({ _id: userId });
 
-    return res.status(200).json({ message: 'User deleted successfully' });
+    return res
+      .status(200)
+      .json({ message: 'User deleted successfully', userToDelete });
   } catch (error) {
     console.error('Error deleting user:', error);
     return res.status(500).json({ error: 'Internal server error' });

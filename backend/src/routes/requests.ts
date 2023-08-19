@@ -29,6 +29,6 @@ router.get('/fetch-all', isUser, fetchAllRequests);
 
 router.post('/add-comment/:id', isUser, addComment);
 
-router.post('/edit-comment/:id', isUser, addComment);
+router.patch('/edit-comment/:id', isUser, addComment);
 
 export default router;

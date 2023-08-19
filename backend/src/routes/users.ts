@@ -18,9 +18,9 @@ router.post('/create-user', isAdmin, createUser);
 
 router.post('/create-admin', isSuperAdmin, createUser);
 
-router.post('/update/:id', isAdmin, updateUser);
+router.patch('/update/:id', isAdmin, updateUser);
 
-router.post('/delete/:id', isAdmin, deleteUser);
+router.delete('/delete/:id', isAdmin, deleteUser);
 
 router.post('/activate/:id', isAdmin, toggleActivation);
 

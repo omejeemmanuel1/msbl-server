@@ -166,6 +166,18 @@ export const updateRequest = async (req: Request | any, res: Response) => {
       updatedRequest.stage,
     );
 
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        updatedRequest.stage,
+      );
+    }
+
     return res.status(200).json({
       message: 'Request updated successfully',
       request: updatedRequest,
@@ -278,6 +290,18 @@ export const approveRequest = async (req: Request | any, res: Response) => {
       updatedRequest.stage,
     );
 
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        updatedRequest.stage,
+      );
+    }
+
     return res.json(updatedRequest);
   } catch (error) {
     console.error('Error approving request:', error);
@@ -334,6 +358,18 @@ export const declineRequest = async (req: Request | any, res: Response) => {
       user.lastName,
       updatedRequest.stage,
     );
+
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        updatedRequest.stage,
+      );
+    }
 
     return res.json(updatedRequest);
   } catch (error) {
@@ -423,6 +459,18 @@ export const addComment = async (req: Request | any, res: Response) => {
       requestToUpdate.stage,
     );
 
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        requestToUpdate.stage,
+      );
+    }
+
     return res.status(200).json({ message: 'Request updated successfully' });
   } catch (err) {
     console.error(err);
@@ -487,6 +535,18 @@ export const editComment = async (req: Request | any, res: Response) => {
       user.lastName,
       requestToUpdate.stage,
     );
+
+    // Find Operations
+    const operations = await User.find({ role: 'operations' });
+
+    // Loop through each operations user and send email
+    for (const operation of operations) {
+      await SendOperationsRequestStatus(
+        operation.email,
+        `${operation.firstName} ${operation.lastName}`,
+        requestToUpdate.stage,
+      );
+    }
 
     return res.status(200).json({ message: 'Comment updated successfully' });
   } catch (error) {
