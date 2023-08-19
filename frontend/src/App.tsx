@@ -3,14 +3,14 @@ import DataProvider from "./context/authContext";
 import "./App.css";
 import Users from "./components/dashboard/Users";
 import UserForm from "./components/dashboard/UserForm";
-import AdminPage from "./pages/AdminDashboard/AdminPage";
-import SuperAdminPage from "./pages/AdminDashboard/SuperAdminPage";
+import AdminPage from "./pages/Dashboards/AdminPage";
+import SuperAdminPage from "./pages/Dashboards/SuperAdminPage";
 import CreateDepartment from "./components/dashboard/CreateDepartment";
-import LoginPage from "./pages/login/Login";
-import ChangePasswordPage from "./pages/forgotPassword/ChangePasswordPage";
-import ForgotPasswordPage from "./pages/forgotPassword/ForgotPasswordPage";
-import VerifyOTPPage from "./pages/forgotPassword/VerifyOTPPage";
-import ResetPasswordPage from "./pages/forgotPassword/ResetPasswordPage";
+import LoginPage from "./pages/Login/Login";
+import ChangePasswordPage from "./pages/Passwords/ChangePasswordPage";
+import ForgotPasswordPage from "./pages/Passwords/ForgotPasswordPage";
+import VerifyOTPPage from "./pages/Passwords/VerifyOTPPage";
+import ResetPasswordPage from "./pages/Passwords/ResetPasswordPage";
 
 function App() {
   return (

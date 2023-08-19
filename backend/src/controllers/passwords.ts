@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Verification } from '../models/resetpassword';
+import { Verification } from '../models/passwords';
 import { User } from '../models/users';
 import bcrypt from 'bcryptjs';
 import {

@@ -7,7 +7,7 @@ import {
   declineRequest,
   fetchRequest,
   fetchAllRequests,
-} from '../controllers/request';
+} from '../controllers/requests';
 import { isUser, isInitiator } from '../middlewares/authorizations';
 
 const router = express.Router();

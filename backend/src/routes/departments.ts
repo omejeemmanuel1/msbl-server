@@ -2,7 +2,7 @@ import express from 'express';
 import {
   createDept,
   fetchDepartment,
-} from '../controllers/departmentController';
+} from '../controllers/departments';
 
 const router = express.Router();
 
