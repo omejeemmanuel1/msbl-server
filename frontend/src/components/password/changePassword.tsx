@@ -49,7 +49,7 @@ const changePassword: React.FC = () => {
           <label htmlFor="password">Old Password</label>
           <input
             type="password"
-            placeholder="Enter Old Password"
+            placeholder="Enter the default password"
             name="password"
             onChange={handleChange}
             required
@@ -58,7 +58,7 @@ const changePassword: React.FC = () => {
           <label htmlFor="password">New Password</label>
           <input
             type="password"
-            placeholder="Enter New Password"
+            placeholder="Enter a new password"
             name="password"
             onChange={handleChange}
             required
@@ -67,7 +67,7 @@ const changePassword: React.FC = () => {
           <label htmlFor="confirm_password">Confirm Password</label>
           <input
             type="password"
-            placeholder="Confirm New Password"
+            placeholder="Confirm your new password"
             name="confirmPassword"
             onChange={handleChange}
             required
@@ -77,7 +77,7 @@ const changePassword: React.FC = () => {
             Change Password
           </button>
 
-          <a href="/login">Go back to login</a>
+          {/* <a href="/login">Proceed to login</a> */}
         </form>
       </div>
     </div>
