@@ -8,23 +8,23 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/users';
-import { isAdmin, isSuperAdmin } from '../middlewares/authorizations';
+import { isAdmin, isSuperAdmin, isUser } from '../middlewares/authorizations';
 
 const router = express.Router();
 
 router.post('/login', login);
 
-router.post('/create-user', isAdmin, createUser);
+router.post('/create-user', isUser, isAdmin, createUser);
 
-router.post('/create-admin', isSuperAdmin, createUser);
+router.post('/create-admin', isUser, isSuperAdmin, createUser);
 
-router.patch('/update/:id', isAdmin, updateUser);
+router.patch('/update/:id', isUser, isAdmin, updateUser);
 
-router.delete('/delete/:id', isAdmin, deleteUser);
+router.delete('/delete/:id', isUser, isAdmin, deleteUser);
 
-router.post('/activate/:id', isAdmin, toggleActivation);
+router.post('/activate/:id', isUser, isAdmin, toggleActivation);
 
-router.get('/fetch-all', isAdmin, fetchAllUsers);
+router.get('/fetch-all', isUser, isAdmin, fetchAllUsers);
 
 router.post('/logout', logout);
 

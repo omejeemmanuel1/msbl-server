@@ -6,15 +6,15 @@ import {
   Comment,
 } from '../models/requests';
 import { requestValidator } from '../utils/utilities';
-import {
-  SendClientRequestStatus,
-  SendInitiatorRequestStatus,
-  SendOperationsRequestStatus,
-} from '../utils/notifications';
 import { User } from '../models/users';
+import { handleRequestUpdates } from '../utils/requestHelpers';
 
-// Create a request
-export const createRequest = async (req: Request | any, res: Response) => {
+// Create or Update a request
+export const createOrUpdateRequest = async (
+  req: Request | any,
+  res: Response,
+  isCreating: boolean,
+) => {
   try {
     const {
       clientName,
@@ -50,142 +50,74 @@ export const createRequest = async (req: Request | any, res: Response) => {
       return res.status(403).json({ error: 'Initiator not found or invalid.' });
     }
 
-    // Create new request
-    const newRequest: RequestDocument = await Requests.create({
-      clientName,
-      clientEmail,
-      clientPhone,
-      initiator: `${initiator.firstName} ${initiator.lastName}`,
-      type,
-      stage: WorkflowStage.Draft,
-      docURL,
-      authURL,
-      comments,
-      narration,
-      status: 'Started',
-    });
+    let newRequest: RequestDocument;
 
-    // Send status of request to client
-    await SendClientRequestStatus(clientEmail, clientName, newRequest.stage);
+    if (isCreating) {
+      // Create new request
+      newRequest = await Requests.create({
+        clientName,
+        clientEmail,
+        clientPhone,
+        initiator: `${initiator.firstName} ${initiator.lastName}`,
+        type,
+        stage: WorkflowStage.Draft,
+        docURL,
+        authURL,
+        comments,
+        narration,
+        status: 'Started',
+      });
 
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      initiator.email,
-      initiator.lastName,
-      newRequest.stage,
-    );
+    // Handle request updates using the helper function
+    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
 
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
+    } else {
+      // Update the request
+      const requestId = req.params.id;
 
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        newRequest.stage,
+      const updatedRequest = await Requests.findByIdAndUpdate(
+        requestId,
+        {
+          clientName,
+          clientEmail,
+          clientPhone,
+          type,
+          docURL,
+          authURL,
+          narration,
+        },
+        { new: true },
       );
+
+      if (!updatedRequest) {
+        return res.status(404).json({ error: 'Request not found.' });
+      }
+
+      newRequest = updatedRequest;
+
+    // Handle request updates using the helper function
+    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
     }
 
-    return res
-      .status(200)
-      .json({ message: 'Request created successfully', request: newRequest });
+
+    return res.status(200).json({
+      message: 'Request created/updated successfully',
+      request: newRequest,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-//Update a request
+// Create a request
+export const createRequest = async (req: Request | any, res: Response) => {
+  return createOrUpdateRequest(req, res, true);
+};
+
+// Update a request
 export const updateRequest = async (req: Request | any, res: Response) => {
-  try {
-    const requestId = req.params.id;
-    const {
-      clientName,
-      clientEmail,
-      clientPhone,
-      type,
-      docURL,
-      authURL,
-      narration,
-    } = req.body;
-
-    const { email } = req.user;
-
-    // Validate request body
-    const validationResult = requestValidator.validate(req.body);
-    if (validationResult.error) {
-      return res.status(400).json({
-        error: validationResult.error.details[0].message,
-      });
-    }
-
-    // Check user authentication
-    if (!email) {
-      return res
-        .status(403)
-        .json({ error: 'Authentication failed. User not authorized.' });
-    }
-
-    // Find initiator based on authenticated user's email
-    const initiator = await User.findOne({ email });
-    if (!initiator) {
-      return res.status(403).json({ error: 'Initiator not found or invalid.' });
-    }
-
-    // Update the request
-    const updatedRequest = await Requests.findByIdAndUpdate(
-      requestId,
-      {
-        clientName,
-        clientEmail,
-        clientPhone,
-        type,
-        docURL,
-        authURL,
-        narration,
-      },
-      { new: true },
-    );
-
-    if (!updatedRequest) {
-      return res.status(404).json({ error: 'Request not found.' });
-    }
-
-    // Send status of request to client
-    await SendClientRequestStatus(
-      clientEmail,
-      clientName,
-      updatedRequest.stage,
-    );
-
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      initiator.email,
-      initiator.lastName,
-      updatedRequest.stage,
-    );
-
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
-
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        updatedRequest.stage,
-      );
-    }
-
-    return res.status(200).json({
-      message: 'Request updated successfully',
-      request: updatedRequest,
-    });
-  } catch (error) {
-    console.error('Error updating request:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
+  return createOrUpdateRequest(req, res, false);
 };
 
 //Search a request by some properties
@@ -276,31 +208,8 @@ export const approveRequest = async (req: Request | any, res: Response) => {
       return res.status(404).json({ error: 'Request not found.' });
     }
 
-    // Send status of request to client
-    await SendClientRequestStatus(
-      updatedRequest.clientEmail,
-      updatedRequest.clientName,
-      updatedRequest.stage,
-    );
-
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      user.email,
-      user.lastName,
-      updatedRequest.stage,
-    );
-
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
-
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        updatedRequest.stage,
-      );
-    }
+    // Handle request updates using the helper function
+    await handleRequestUpdates(updatedRequest, user, updatedRequest.stage);
 
     return res.json(updatedRequest);
   } catch (error) {
@@ -345,31 +254,8 @@ export const declineRequest = async (req: Request | any, res: Response) => {
       return res.status(404).json({ error: 'Request not found.' });
     }
 
-    // Send status of request to client
-    await SendClientRequestStatus(
-      updatedRequest.clientEmail,
-      updatedRequest.clientName,
-      updatedRequest.stage,
-    );
-
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      user.email,
-      user.lastName,
-      updatedRequest.stage,
-    );
-
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
-
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        updatedRequest.stage,
-      );
-    }
+    // Handle request updates using the helper function
+    await handleRequestUpdates(updatedRequest, user, updatedRequest.stage);
 
     return res.json(updatedRequest);
   } catch (error) {
@@ -445,31 +331,8 @@ export const addComment = async (req: Request | any, res: Response) => {
     // Save the updated request
     await requestToUpdate.save();
 
-    // Send status of request to client
-    await SendClientRequestStatus(
-      requestToUpdate.clientEmail,
-      requestToUpdate.clientName,
-      requestToUpdate.stage,
-    );
-
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      user.email,
-      user.lastName,
-      requestToUpdate.stage,
-    );
-
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
-
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        requestToUpdate.stage,
-      );
-    }
+    // Handle request updates using the helper function
+    await handleRequestUpdates(requestToUpdate, user, requestToUpdate.stage);
 
     return res.status(200).json({ message: 'Request updated successfully' });
   } catch (err) {
@@ -529,24 +392,8 @@ export const editComment = async (req: Request | any, res: Response) => {
     // Save the updated request
     await requestToUpdate.save();
 
-    // Send status of request to Initiators
-    await SendInitiatorRequestStatus(
-      user.email,
-      user.lastName,
-      requestToUpdate.stage,
-    );
-
-    // Find Operations
-    const operations = await User.find({ role: 'operations' });
-
-    // Loop through each operations user and send email
-    for (const operation of operations) {
-      await SendOperationsRequestStatus(
-        operation.email,
-        `${operation.firstName} ${operation.lastName}`,
-        requestToUpdate.stage,
-      );
-    }
+    // Handle request updates using the helper function
+    await handleRequestUpdates(requestToUpdate, user, requestToUpdate.stage);
 
     return res.status(200).json({ message: 'Comment updated successfully' });
   } catch (error) {

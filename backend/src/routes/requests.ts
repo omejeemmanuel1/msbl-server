@@ -13,9 +13,9 @@ import { isUser, isInitiator } from '../middlewares/authorizations';
 
 const router = express.Router();
 
-router.post('/create', isInitiator, createRequest);
+router.post('/create', isUser, isInitiator, createRequest);
 
-router.post('/update/:id', isInitiator, updateRequest);
+router.post('/update/:id', isUser, isInitiator, updateRequest);
 
 router.post('/approve/:id', isUser, approveRequest);
 
