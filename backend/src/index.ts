@@ -6,8 +6,8 @@ import path from 'path';
 import cors from 'cors';
 import users from './routes/users';
 import requests from './routes/requests';
-import department from './routes/department';
-import passwords from './routes/resetpassword';
+import department from './routes/departments';
+import passwords from './routes/passwords';
 
 const app = express();
 const port = 3000;

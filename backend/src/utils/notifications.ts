@@ -1,7 +1,14 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { jwtsecret, hostname, username, password, port } from '../config';
+import {
+  jwtsecret,
+  hostname,
+  username,
+  password,
+  port,
+  verificationLink,
+} from '../config';
 
 export const GenerateSalt = async () => {
   return await bcrypt.genSalt();
@@ -68,7 +75,7 @@ export const ValidateToken = async (token: string) => {
 export const SendActivationLink = async (
   email: string,
   name: string,
-  verificationLink: string,
+  id: string,
 ) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -92,11 +99,11 @@ export const SendActivationLink = async (
           </h1>
           <h2>Activate your account</h2>
           <p>
-            Your confirmation code is below — enter it in the browser window where you’ve started signing up for QuickGrade.
+            Your accout activation link is below — enter it in the browser window to change your password and activate your account.
           </p>
           <h1>${name}</h1>
           <p>Please click the following link to verify your account:</p>
-          <a href="${verificationLink}">${verificationLink}</a>
+          <a href="${verificationLink}">${verificationLink}/${id}</a>
           <p>Note that the link is only valid for a limited time.</p>
           <p>If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
@@ -144,7 +151,7 @@ export const SendPasswordResetOTP = async (email: string, otp: number) => {
   }
 };
 
-export const SendRequestStatusMail = async (
+export const SendClientRequestStatus = async (
   email: string,
   name: string,
   status: string,
@@ -176,6 +183,86 @@ export const SendRequestStatusMail = async (
           <p>Please contact us at operations@meristemng.com if you have any questions or concerns about your request.</p>
           <p>If you didn’t request this email or have any questions, there’s nothing to worry about — you can safely ignore it.</p>
         </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending request status email:', error);
+    throw new Error('Error sending request status email');
+  }
+};
+
+export const SendInitiatorRequestStatus = async (
+  email: string,
+  name: string,
+  status: string,
+) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: hostname,
+      port: port,
+      auth: {
+        user: username,
+        pass: password,
+      },
+    });
+
+    const mailOptions = {
+      // from: 'MSBL <noreply@meristemng.com>',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
+      to: email,
+      subject: 'Request Status Update',
+      html: `
+        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+            Meristem Operations Work Flow
+          </h1>
+          <h2>Request Status Update</h2>
+          <p>Dear ${name},</p>
+          <p>The status of the request you are working on has been updated.</p>
+          <h2>${status}</h2>
+       </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending request status email:', error);
+    throw new Error('Error sending request status email');
+  }
+};
+
+export const SendOperationsRequestStatus = async (
+  email: string,
+  name: string,
+  status: string,
+) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: hostname,
+      port: port,
+      auth: {
+        user: username,
+        pass: password,
+      },
+    });
+
+    const mailOptions = {
+      // from: 'MSBL <noreply@meristemng.com>',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
+      to: email,
+      subject: 'Request Status Update',
+      html: `
+        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+            Meristem Operations Work Flow
+          </h1>
+          <h2>Request Status Update</h2>
+          <p>Dear ${name},</p>
+          <p>The status of the request you are working on has been updated.</p>
+          <h2>${status}</h2>
+       </div>
       `,
     };
 

@@ -5,6 +5,8 @@ import {
   logout,
   toggleActivation,
   fetchAllUsers,
+  updateUser,
+  deleteUser,
   fetchSingleUser,
 } from '../controllers/users';
 import { isAdmin, isSuperAdmin } from '../middlewares/authorizations';
@@ -17,7 +19,11 @@ router.post('/create-user', isAdmin, createUser);
 
 router.post('/create-admin', isSuperAdmin, createUser);
 
-router.post('/update/:id', isAdmin, toggleActivation);
+router.patch('/update/:id', isAdmin, updateUser);
+
+router.delete('/delete/:id', isAdmin, deleteUser);
+
+router.post('/activate/:id', isAdmin, toggleActivation);
 
 router.get('/fetch-all', isAdmin, fetchAllUsers);
 

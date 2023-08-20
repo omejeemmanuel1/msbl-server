@@ -19,6 +19,7 @@ import {
 import emailValidator from 'email-validator';
 import bcrypt from 'bcryptjs';
 
+//Login
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -152,6 +153,7 @@ export const login = async (req: Request, res: Response) => {
 //   }
 // };
 
+// Create a user
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { users } = req.body;
@@ -203,20 +205,67 @@ export const createUser = async (req: Request, res: Response) => {
       const savedUser = await newUser.save();
       savedUsers.push(savedUser);
 
-      await SendActivationLink(
-        email,
-        `${firstName} ${lastName}`,
-        `http://localhost:3000/users/update/${newUser._id}`,
-      );
+      await SendActivationLink(email, `${firstName} ${lastName}`, savedUser.id);
     }
 
-    res.status(201).json(savedUsers);
+    res.status(201).json({ message: 'User created successfully', savedUsers });
   } catch (error) {
     console.error('Error creating users:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+//Update user properties
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateUser = async (req: Request | any, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const { firstName, lastName, email, department, role } = req.body;
+
+    const userToUpdate = await User.findById(userId);
+    if (!userToUpdate) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Check if email is being changed and it's not a duplicate
+    if (userToUpdate.email !== email) {
+      const existingUserWithEmail = await User.findOne({ email });
+      if (existingUserWithEmail) {
+        return res
+          .status(400)
+          .json({ error: `The email address ${email} is already in use.` });
+      }
+    }
+
+    // Restrict certain updates for admin users
+    if (
+      userToUpdate.role === 'admin' &&
+      req.user.role === 'admin' &&
+      req.user.id !== userId
+    ) {
+      return res
+        .status(403)
+        .json({ error: 'Unauthorized to update other admin information.' });
+    }
+
+    userToUpdate.firstName = firstName;
+    userToUpdate.lastName = lastName;
+    userToUpdate.email = email;
+    userToUpdate.department = department;
+    userToUpdate.role = role;
+
+    await userToUpdate.save();
+
+    return res
+      .status(200)
+      .json({ message: 'User updated successfully', userToUpdate });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+//Activate and Deactivate a user
 export const toggleActivation = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -241,6 +290,28 @@ export const toggleActivation = async (req: Request, res: Response) => {
   }
 };
 
+//Delete a user
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+
+    const userToDelete = await User.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    await User.deleteOne({ _id: userId });
+
+    return res
+      .status(200)
+      .json({ message: 'User deleted successfully', userToDelete });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+//Fetch all users
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const allUsers = await User.find();

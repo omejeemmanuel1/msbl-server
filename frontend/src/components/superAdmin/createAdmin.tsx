@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./createAdmin.css";
 import { BsTrash } from "react-icons/Bs";
 import { TbTrashOff } from "react-icons/Tb";
 import { useData } from "../../context/authContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+interface Department {
+  id: number;
+  departmentName: string;
+}
 
 interface Admin {
   id: number;
@@ -26,8 +31,23 @@ const initialAdmin: Admin = {
 
 const AdminForm: React.FC = () => {
   const [users, setAdmins] = useState<Admin[]>([initialAdmin]);
+  const [departments, setDepartments] = useState<Department[]>([]);
 
-  const { createAdmin } = useData();
+  const { createAdmin, fetchDepartments } = useData();
+
+  useEffect(() => {
+    const fetchDepartmentsData = async () => {
+      try {
+        const departmentsData = await fetchDepartments();
+        setDepartments(departmentsData);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+        toast.error("Error fetching departments:");
+      }
+    };
+    fetchDepartmentsData();
+  }, []);
+
 
   const handleAddAdmin = () => {
     setAdmins((prevAdmins) => [
@@ -137,7 +157,15 @@ const AdminForm: React.FC = () => {
                       className="dept"
                     >
                       <option value="">Select Department</option>
-                      <option value="IT">IT (Information Technology)</option>
+                      {departments.map((department) => (
+                        <option
+                          key={department.id}
+                          value={department.departmentName}
+                          className="department-option"
+                        >
+                          {department.departmentName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="form-group">
