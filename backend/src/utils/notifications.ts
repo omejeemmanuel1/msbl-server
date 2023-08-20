@@ -116,7 +116,7 @@ export const SendActivationLink = async (
 };
 
 export const SendPasswordResetOTP = async (email: string, otp: number) => {
-  const subject = 'Account Activation';
+  const subject = 'Password Reset OTP';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <p>Your OTP to reset your password is:</p>
@@ -134,7 +134,7 @@ export const SendClientRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  const subject = 'Account Activation';
+  const subject = 'Request Status Update (Client)';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
@@ -156,7 +156,7 @@ export const SendInitiatorRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  const subject = 'Account Activation';
+  const subject = 'Request Status Update (Initiator)';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
@@ -176,7 +176,7 @@ export const SendOperationsRequestStatus = async (
   name: string,
   status: string,
 ) => {
-  const subject = 'Account Activation';
+  const subject = 'Request Status Update (Operations)';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">

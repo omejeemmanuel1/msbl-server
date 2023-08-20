@@ -48,6 +48,7 @@ export const changePassword = async (req: Request, res: Response) => {
     const hashedNewPassword = await GeneratePassword(newPassword, salt);
 
     user.status = STATUS_ACTIVE;
+    await user.save();
     await user.updateOne({ password: hashedNewPassword });
 
     return res.status(200).json({ message: 'Password changed successfully' });

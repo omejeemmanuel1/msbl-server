@@ -9,7 +9,7 @@ import { requestValidator } from '../utils/utilities';
 import { User } from '../models/users';
 import { handleRequestUpdates } from '../utils/requestHelpers';
 
-// Create a request
+// Create or Update a request
 export const createOrUpdateRequest = async (
   req: Request | any,
   res: Response,
@@ -67,6 +67,10 @@ export const createOrUpdateRequest = async (
         narration,
         status: 'Started',
       });
+
+    // Handle request updates using the helper function
+    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
+
     } else {
       // Update the request
       const requestId = req.params.id;
@@ -91,13 +95,10 @@ export const createOrUpdateRequest = async (
 
       newRequest = updatedRequest;
 
-      // Handle request updates using the helper function
-      await handleRequestUpdates(
-        updatedRequest,
-        initiator,
-        updatedRequest.stage,
-      );
+    // Handle request updates using the helper function
+    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
     }
+
 
     return res.status(200).json({
       message: 'Request created/updated successfully',
