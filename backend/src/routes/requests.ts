@@ -8,6 +8,7 @@ import {
   fetchRequestbyID,
   fetchAllRequests,
   addComment,
+  editComment,
 } from '../controllers/requests';
 import { isUser, isInitiator } from '../middlewares/authorizations';
 
@@ -29,6 +30,6 @@ router.get('/fetch-all', isUser, fetchAllRequests);
 
 router.post('/add-comment/:id', isUser, addComment);
 
-router.patch('/edit-comment/:id', isUser, addComment);
+router.patch('/edit-comment/:id', isUser, editComment);
 
 export default router;

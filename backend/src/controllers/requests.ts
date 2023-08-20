@@ -68,9 +68,8 @@ export const createOrUpdateRequest = async (
         status: 'Started',
       });
 
-    // Handle request updates using the helper function
-    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
-
+      // Handle request updates using the helper function
+      await handleRequestUpdates(newRequest, initiator, newRequest.stage);
     } else {
       // Update the request
       const requestId = req.params.id;
@@ -95,10 +94,9 @@ export const createOrUpdateRequest = async (
 
       newRequest = updatedRequest;
 
-    // Handle request updates using the helper function
-    await handleRequestUpdates(newRequest, initiator, newRequest.stage);
+      // Handle request updates using the helper function
+      await handleRequestUpdates(newRequest, initiator, newRequest.stage);
     }
-
 
     return res.status(200).json({
       message: 'Request created/updated successfully',
@@ -345,7 +343,7 @@ export const addComment = async (req: Request | any, res: Response) => {
 export const editComment = async (req: Request | any, res: Response) => {
   try {
     const requestId = req.params.id;
-    const { newText } = req.body;
+    const { newText, commentTimestamp } = req.body;
     const { email } = req.user;
 
     // Check user authentication
@@ -367,9 +365,11 @@ export const editComment = async (req: Request | any, res: Response) => {
       return res.status(404).json({ error: 'Request not found.' });
     }
 
-    // Find the comment index in the array
+    // Find the comment index in the array based on comment timestamp
     const commentIndex = requestToUpdate.comments.findIndex(
-      (comment) => comment.user === `${user.firstName} ${user.lastName}`,
+      (comment) =>
+        comment.timestamp.getTime() === new Date(commentTimestamp).getTime() &&
+        comment.user === `${user.firstName} ${user.lastName}`,
     );
 
     if (commentIndex === -1) {
@@ -387,7 +387,7 @@ export const editComment = async (req: Request | any, res: Response) => {
 
     // Update the comment's text
     commentToEdit.text = newText;
-    commentToEdit.timestamp = new Date();
+    commentToEdit.timestamp = new Date(); // Update the timestamp
 
     // Save the updated request
     await requestToUpdate.save();
