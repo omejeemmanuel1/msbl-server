@@ -1,37 +1,44 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaSearch } from "react-icons/fa"; // Import the search icon from react-icons
 import "./SearchBar.css"; // Import the external CSS file
 
 interface SearchResult {
-  // Define the structure of the search results here
-  // Assuming full name is in 'clientName'
   clientName?: string;
+  initiator?: string;
   type?: string;
   status?: string;
-  date?: string;
-  // Add other properties as needed for displaying full details
+  narration?: string;
 }
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
 
   const handleSearch = async () => {
     try {
+      if (!searchQuery.trim()) {
+        toast.error("Please enter a valid search query");
+        return;
+      }
+
+      setIsLoading(true); // Start loading
       const response = await axios.get(
         `http://localhost:3000/requests/search`,
         {
           params: {
             name: searchQuery,
-            date: searchQuery,
-            status: searchQuery,
-            type: searchQuery,
           },
         }
       );
       setSearchResults(response.data.results);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -44,24 +51,31 @@ const SearchBar = () => {
         placeholder="Search..."
         className="search-input"
       />
-      <button onClick={handleSearch} className="search-button">
-        Search
+      <button
+        onClick={handleSearch}
+        className={`search-button ${isLoading ? "loading" : ""}`}
+        disabled={isLoading}
+      >
+        {isLoading ? "Searching..." : <FaSearch />}{" "}
+        {/* Display icon or loading text */}
       </button>
       <div>
+        {/* Search results */}
         {searchResults.map((result, index) => (
           <div key={index} className="search-result">
             <p className="result-name">
-              {result.clientName && `Full Name: ${result.clientName}`}
+              {result.clientName && `Client Name: ${result.clientName}`}
             </p>
+            <p>{result.initiator && `Initiator Name: ${result.initiator}`}</p>
             <p className="result-details">
-              {result.type && `Type: ${result.type}`}
-              {result.status && `Status: ${result.status}`}
-              {result.date && `Date: ${result.date}`}
-              {/* Display additional result details here */}
+              {result.type && `Request Type: ${result.type}`}
             </p>
+            <p>{result.status && `Status: ${result.status}`}</p>
+            <p>{result.narration && `Narration: ${result.narration}`}</p>
           </div>
         ))}
       </div>
+      <ToastContainer />
     </div>
   );
 };

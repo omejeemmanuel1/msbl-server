@@ -22,7 +22,7 @@ router.post('/approve/:id', isUser, approveRequest);
 
 router.post('/decline/:id', isUser, declineRequest);
 
-router.get('/search', isUser, searchRequest);
+router.get('/search', searchRequest);
 
 router.get('/fetch/:id', isUser, fetchRequestbyID);
 
