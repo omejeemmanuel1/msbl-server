@@ -18,12 +18,6 @@ const changePassword: React.FC = () => {
     id
   };
 
-  // useEffect(() => {
-  //   if (id) {
-  //     console.log('Activation ID:', id);
-  //   }
-  // }, [id]);
-
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
   };
