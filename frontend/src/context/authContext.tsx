@@ -43,9 +43,9 @@ const DataProvider = ({ children }: any) => {
           email: user.email
         };
        await apiPost(`/password/forgot`, forgotPasswordData).then((response)=>{
-        console.log(response);
+        const token  = response.data.token;
+       localStorage.setItem("token",token)
       
-      localStorage.setItem("success", response.data);
       swal("OTP sent successfully. Check your mail for instructions to reset your password");
       
        setTimeout(()=>{

@@ -41,7 +41,12 @@ const Login: React.FC = () => {
         swal("Login", "Successful", "success");
 
         setTimeout(() => {
-          navigate("/admin");
+          if(email === "superadmin@meristemng.com"){
+            navigate("/super-admin");
+          }else{
+            navigate("/admin");
+          }
+          
         }, 2000); // Use setTimeout instead of setInterval for navigation
       } else {
         console.log("Error logging in");

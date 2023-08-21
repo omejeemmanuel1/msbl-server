@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
 import axios from "axios";
 import { useNavigate  } from 'react-router-dom';
-import { useData } from "../../context/authContext";
 
 const changePassword = () => {
   const navigate = useNavigate();
-  const { resetPassword } = useData();
   const [data, setData] = useState({ newPassword: "", confirmPassword: "" });
-
-  const payload = {
-    data
-  };
 
   const handleChange = (e: any) => {
     const {
@@ -23,7 +17,6 @@ const changePassword = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    // await resetPassword(payload);
     try {
       let response = await axios.post(
         'http://localhost:3000/password/reset',
