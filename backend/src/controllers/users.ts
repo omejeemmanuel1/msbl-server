@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { User, UserDocument } from '../models/users';
+import bcrypt from 'bcryptjs';
+import emailValidator from 'email-validator';
 import {
-  GeneratePassword,
   GenerateSalt,
   GenerateToken,
+  GeneratePassword,
   SendActivationLink,
 } from '../utils/notifications';
 import {
@@ -11,15 +12,14 @@ import {
   loginValidator,
   variables,
 } from '../utils/utilities';
+import { User, UserDocument } from '../models/users';
 import {
   defaultpassword,
   superadminemail,
   superadminpassword,
 } from '../config';
-import emailValidator from 'email-validator';
-import bcrypt from 'bcryptjs';
 
-//Login
+// Login
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -49,7 +49,7 @@ export const login = async (req: Request, res: Response) => {
       const token = await GenerateToken(email, '', '', '', res); // Pass null for firstName and lastName
       return res
         .status(200)
-        .json({ message: 'Super Admin logged in Successfully', token });
+        .json({ message: 'SuperAdmin logged in Successfully', token });
     }
 
     const existingUser = await User.findOne({ email });
@@ -265,7 +265,7 @@ export const updateUser = async (req: Request | any, res: Response) => {
   }
 };
 
-//Activate and Deactivate a user
+// Activate and Deactivate a user
 export const toggleActivation = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -290,7 +290,7 @@ export const toggleActivation = async (req: Request, res: Response) => {
   }
 };
 
-//Delete a user
+// Delete a user
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
@@ -311,7 +311,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-//Fetch all users
+// Fetch all users
 export const fetchAllUsers = async (req: Request, res: Response) => {
   try {
     const allUsers = await User.find();

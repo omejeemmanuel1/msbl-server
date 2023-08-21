@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import { Verification } from '../models/passwords';
-import { User } from '../models/users';
 import bcrypt from 'bcryptjs';
 import {
   GenerateOtp,
@@ -9,51 +7,54 @@ import {
   GenerateToken,
   SendPasswordResetOTP,
 } from '../utils/notifications';
+import { User } from '../models/users';
+import { Verification } from '../models/passwords';
+
+const STATUS_ACTIVE = 'active';
+
+const sendErrorResponse = (
+  res: Response,
+  statusCode: number,
+  message: string,
+) => {
+  return res.status(statusCode).json({ message });
+};
 
 // Change Password API
 export const changePassword = async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
-
     const userId = req.params.id;
-
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return sendErrorResponse(res, 404, 'User not found');
     }
 
-    // Check if the provided current password matches the stored password
     const isPasswordValid = await bcrypt.compare(
       currentPassword,
       user.password,
     );
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid current password' });
+      return sendErrorResponse(res, 401, 'Invalid current password');
     }
 
-    // Check if the new password and confirm password match
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
+      return sendErrorResponse(res, 400, 'Passwords do not match');
     }
 
-    // Hash the new password
     const salt = await GenerateSalt();
     const hashedNewPassword = await GeneratePassword(newPassword, salt);
 
-    // Update the user's password
-
-    user.status = 'active';
+    user.status = STATUS_ACTIVE;
     await user.save();
     await user.updateOne({ password: hashedNewPassword });
 
-    return res.status(200).json({
-      message: 'Password changed successfully',
-    });
+    return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
 
@@ -63,9 +64,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found, kindly register first',
-      });
+      return sendErrorResponse(
+        res,
+        404,
+        'User not found, kindly register first',
+      );
     }
 
     const verification = await Verification.findOne({ userId: user.id });
@@ -89,7 +92,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'OTP sent successfully', token });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
 
@@ -121,7 +124,7 @@ export const verifyOTP = async (req: Request | any, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
 
@@ -129,6 +132,7 @@ export const resetPassword = async (req: Request | any, res: Response) => {
   const { newPassword, confirmPassword } = req.body;
   const reg = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/g;
   const checker = reg.test(newPassword);
+
   try {
     const { email } = req.user;
 
@@ -165,6 +169,6 @@ export const resetPassword = async (req: Request | any, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    return sendErrorResponse(res, 500, 'Internal server error');
   }
 };

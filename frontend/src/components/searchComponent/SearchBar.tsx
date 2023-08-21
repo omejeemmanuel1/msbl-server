@@ -13,7 +13,7 @@ interface SearchResult {
   narration?: string;
 }
 
-const SearchBar = () => {
+const SearchBar:React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false); // Track loading state
