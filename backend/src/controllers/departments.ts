@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Department, DepartmentDocument } from '../models/department';
+import { Department, DepartmentDocument } from '../models/departments';
 
 import { deptValidate, variables } from '../utils/utilities';
 

@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/users';
-import { jwtsecret, superadminemail, superadminpassword } from '../config';
+import { jwtsecret, superadminemail } from '../config';
 
 const sendErrorResponse = (res: Response, status: number, message: string) => {
   return res.status(status).json({ error: message });
 };
 
+// Authentication middleware
 export const isUser = async (
   req: Request | any,
   res: Response,
@@ -29,25 +29,8 @@ export const isUser = async (
         return sendErrorResponse(res, 401, 'Invalid token');
       }
 
-      const { email } = verifiedUser as { email: string };
-
-      try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-          return sendErrorResponse(
-            res,
-            401,
-            'Kindly register or sign in as a user',
-          );
-        }
-
-        req.user = verifiedUser;
-        next();
-      } catch (error) {
-        console.error('Error finding user:', error);
-        return sendErrorResponse(res, 500, 'Internal server error');
-      }
+      req.user = verifiedUser;
+      next();
     }
   } catch (error) {
     console.error('Error in user authentication middleware:', error);
@@ -55,41 +38,16 @@ export const isUser = async (
   }
 };
 
+// Authorization middleware for SuperAdmin
 export const isSuperAdmin = async (
   req: Request | any,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
+    const { email } = req.user as { email: string };
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return sendErrorResponse(res, 401, 'Kindly sign in as a user');
-    }
-
-    const token = authHeader.substring(7);
-
-    if (!token) {
-      return sendErrorResponse(res, 401, 'Kindly sign in as a user');
-    }
-
-    const superadmin = [
-      {
-        email: superadminemail,
-        password: superadminpassword,
-        name: 'Super Admin',
-      },
-    ];
-
-    const decodedToken = jwt.verify(token, jwtsecret) as {
-      email: string;
-    };
-    const userIsSuperAdmin = superadmin.find(
-      (admin) => admin.email === decodedToken.email,
-    );
-
-    if (userIsSuperAdmin) {
-      req.user = decodedToken;
+    if (email === superadminemail) {
       next();
     } else {
       return sendErrorResponse(
@@ -99,119 +57,56 @@ export const isSuperAdmin = async (
       );
     }
   } catch (error) {
-    console.error('Error in isSuperAdmin middleware:', error);
-    return sendErrorResponse(res, 500, 'Internal server error 3--');
+    console.error('Error in authorizeSuperAdmin middleware:', error);
+    return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
 
+// Authorization middleware for Admin
 export const isAdmin = async (
   req: Request | any,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
+    const { email } = req.user as { email: string };
 
-      if (!token) {
-        return sendErrorResponse(res, 401, 'Kindly sign in as a user');
-      }
+    const user = await User.findOne({ email });
 
-      let verifiedUser;
-
-      try {
-        verifiedUser = jwt.verify(token, jwtsecret);
-      } catch (error) {
-        return sendErrorResponse(res, 401, 'Invalid token');
-      }
-
-      const { email } = verifiedUser as { email: string };
-
-      try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-          return sendErrorResponse(
-            res,
-            401,
-            'Kindly register or sign in as a user',
-          );
-        }
-
-        if (user.role !== 'admin' || user.status !== 'active') {
-          return sendErrorResponse(
-            res,
-            403,
-            'Only Admin can perform this action',
-          );
-        }
-
-        req.user = verifiedUser;
-        next();
-      } catch (error) {
-        console.error('Error finding user:', error);
-        return sendErrorResponse(res, 500, 'Internal server error');
-      }
+    if (user && user.role === 'admin' && user.status === 'active') {
+      next();
+    } else {
+      return sendErrorResponse(res, 403, 'Only Admin can perform this action');
     }
   } catch (error) {
-    console.error('Error in user authentication middleware:', error);
+    console.error('Error in authorizeAdmin middleware:', error);
     return sendErrorResponse(res, 500, 'Internal server error');
   }
 };
 
+// Authorization middleware for Initiator
 export const isInitiator = async (
   req: Request | any,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
+    const { email } = req.user as { email: string };
 
-      if (!token) {
-        return sendErrorResponse(res, 401, 'Kindly sign in as a user');
-      }
+    const user = await User.findOne({ email });
 
-      let verifiedUser;
-
-      try {
-        verifiedUser = jwt.verify(token, jwtsecret);
-      } catch (error) {
-        return sendErrorResponse(res, 401, 'Invalid token');
-      }
-
-      const { email } = verifiedUser as { email: string };
-
-      try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-          return sendErrorResponse(
-            res,
-            401,
-            'Kindly register or sign in as a user',
-          );
-        }
-
-        if (user.role !== 'initiator' || user.status !== 'active') {
-          return sendErrorResponse(
-            res,
-            403,
-            'Only Initiator can perform this action',
-          );
-        }
-
-        req.user = verifiedUser;
-        next();
-      } catch (error) {
-        console.error('Error finding user:', error);
-        return sendErrorResponse(res, 500, 'Internal server error');
-      }
+    if (user && user.role === 'initiator' && user.status === 'active') {
+      next();
+    } else {
+      console.log('Authorization failed for Initiator'); // Log the authorization failure
+      return sendErrorResponse(
+        res,
+        403,
+        'Only Initiator can perform this action',
+      );
     }
   } catch (error) {
-    console.error('Error in user authentication middleware:', error);
+    console.error('Error in authorizeInitiator middleware:', error);
     return sendErrorResponse(res, 500, 'Internal server error');
   }
 };

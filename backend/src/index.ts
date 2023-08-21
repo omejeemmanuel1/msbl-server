@@ -6,8 +6,9 @@ import path from 'path';
 import cors from 'cors';
 import users from './routes/users';
 import requests from './routes/requests';
-import department from './routes/department';
-import passwords from './routes/resetpassword';
+import department from './routes/departments';
+import passwords from './routes/passwords';
+import { errorHandler } from './middlewares/errorMiddleware';
 
 const app = express();
 const port = 3000;
@@ -29,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors(corsOptions));
-
+// app.use(errorHandler);
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/users', users);

@@ -180,8 +180,8 @@ const UserForm: React.FC = () => {
                     >
                       <option value="">Select Role</option>
                       <option value="initiator">Initiator</option>
-                      <option value="checker">Checker</option>
-                      <option value="requester">Requester</option>
+                      <option value="operations">Operations</option>
+                      <option value="ICU">ICU</option>
                     </select>
                   </div>
                   <button
