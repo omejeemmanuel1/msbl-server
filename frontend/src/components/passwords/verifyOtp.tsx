@@ -20,8 +20,6 @@ const VerifyOtp: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const otp = otpDigits.join("");
-    console.log(otp)
-
     try {
       const response = await axios.post(
         "http://localhost:3000/password/verify-otp",
@@ -34,8 +32,6 @@ const VerifyOtp: React.FC = () => {
           }
         }
       );
-      
-      console.log(response.data);
       if(response.data.message=="OTP verified successfully. Proceed to change your password"){
         swal("OTP verified successfully. Proceed to change your password");
 
