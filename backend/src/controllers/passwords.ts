@@ -25,10 +25,12 @@ export const changePassword = async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     const userId = req.params.id;
+
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
-      return sendErrorResponse(res, 404, 'User not found');
+     
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -51,7 +53,10 @@ export const changePassword = async (req: Request, res: Response) => {
     await user.save();
     await user.updateOne({ password: hashedNewPassword });
 
-    return res.status(200).json({ message: 'Password changed successfully' });
+    return res.status(200).json({
+      staus:200,
+      message: 'Password changed successfully',
+    });
   } catch (error) {
     console.error(error);
     return sendErrorResponse(res, 500, 'Internal server error');

@@ -41,7 +41,12 @@ const Login: React.FC = () => {
         swal("Login", "Successful", "success");
 
         setTimeout(() => {
-          navigate("/admin");
+          if(email === "superadmin@meristemng.com"){
+            navigate("/super-admin");
+          }else{
+            navigate("/admin");
+          }
+          
         }, 2000); // Use setTimeout instead of setInterval for navigation
       } else {
         console.log("Error logging in");
@@ -94,10 +99,10 @@ const Login: React.FC = () => {
               <button type="submit" className="login-btn">
                 Sign In
               </button>
-              {/* <p className='forgot_password'>
+              <p className='forgot_password'>
               Forgot your password?
               <a href="/forgot-password">Reset Password</a>
-            </p> */}
+            </p>
             </form>
           </div>
         </div>
