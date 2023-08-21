@@ -2,11 +2,17 @@ import React, { useState } from "react";
 import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate  } from 'react-router-dom';
+import { useData } from "../../context/authContext";
 
-const changePassword: React.FC = () => {
+const changePassword = () => {
   const navigate = useNavigate();
+  const { resetPassword } = useData();
   const [data, setData] = useState({ newPassword: "", confirmPassword: "" });
+
+  const payload = {
+    data
+  };
 
   const handleChange = (e: any) => {
     const {
@@ -15,21 +21,25 @@ const changePassword: React.FC = () => {
     setData((details) => ({ ...details, [name]: value }));
   };
 
-  // const token = localStorage.getItem("token");
-
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    // await resetPassword(payload);
     try {
       let response = await axios.post(
         'http://localhost:3000/password/reset',
         {
           newPassword: data.newPassword,
           confirmPassword: data.confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
-      if (response.status === 201) {
-        navigate("/login");
-      }
+
+      navigate("/login");
+     
       console.log(response);
     } catch (error) {
       console.log(error);
@@ -50,7 +60,7 @@ const changePassword: React.FC = () => {
           <input
             type="password"
             placeholder="Enter your new password"
-            name="password"
+            name="newPassword"
             onChange={handleChange}
             required
           />

@@ -128,11 +128,11 @@ export const createUser = async (req: Request, res: Response) => {
 
       const savedUser = await newUser.save();
       savedUsers.push(savedUser);
-
+ 
       await SendActivationLink(
         email,
         `${firstName} ${lastName}`,
-        savedUser.id,
+        savedUser._id,
       );
     }
 

@@ -21,7 +21,6 @@ export const isUser = async (
       if (!token) {
         return sendErrorResponse(res, 401, 'Kindly sign in as a user');
       }
-
       let verifiedUser;
 
       try {

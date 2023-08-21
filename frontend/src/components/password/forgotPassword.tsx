@@ -4,27 +4,36 @@ import axios from 'axios';
 import './forgotPassword.css';
 import { useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
+import { useData } from "../../context/authContext";
 
 const forgotPassword: React.FC = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({email: ''});
+  const [email, setEmail] = useState("");
+  const { forgotPassword } = useData();
+
+  const payload = {
+    email
+  };
 
   const handleChange = (e: any) => {
-    const {target: {value, name}} = e;
-    setState((data) => ({...data, [name]: value}))
+    console.log(e.target.value)
+   setEmail(e.target.value)
   }
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    let response = await axios.post('http://localhost:3000/password/forgot', {
-      email: state.email
-    });
-    console.log(response);
-    swal("OTP sent successfully. Check your mail for instructions to reset your password")
+    await forgotPassword(payload)
+    // let response = await axios.post('http://localhost:3000/password/forgot', {
+    //   email: state.email
+    // });
+    // console.log(response);
+    // const token  = response.data.token;
+    // localStorage.setItem("token",token)
+    // swal("OTP sent successfully. Check your mail for instructions to reset your password")
 
-    setTimeout(() => {
-      navigate("/verify-otp");
-    }, 2000); 
+    // setTimeout(() => {
+    //   navigate("/verify-otp");
+    // }, 2000); 
 
   }
 
@@ -44,8 +53,10 @@ const forgotPassword: React.FC = () => {
               name="email" 
               onChange={handleChange}
               required 
+              value={email}
             />
             <button type="submit" className="btn">Reset Password</button>
+            <a href="/login">Go back to login</a>
           </form>
           </div>
     </div>

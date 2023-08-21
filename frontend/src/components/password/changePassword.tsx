@@ -1,39 +1,44 @@
 import React, { useState } from "react";
 import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useData } from "../../context/authContext";
+import { useParams  } from 'react-router-dom';
 
-const changePassword: React.FC = () => {
-  const navigate = useNavigate();
-  const [data, setData] = useState({ password: "", confirmPassword: "" });
+const changePassword: React.FC = () => { 
+  const { id } = useParams();
+  const { changePassword } = useData();
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
-  const handleChange = (e: any) => {
-    const {
-      target: { value, name },
-    } = e;
-    setData((details) => ({ ...details, [name]: value }));
+  const payload = {
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    id
   };
 
-  const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   if (id) {
+  //     console.log('Activation ID:', id);
+  //   }
+  // }, [id]);
 
-  const handleSubmit = async (event: any) => {
+  const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPassword(e.target.value);
+  };
+
+  const handleNewPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPassword(e.target.value);
+  };
+
+  const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      let response = await axios.post(
-        `http://localhost:3000/verify/reset?token=${token}`,
-        {
-          oldPassword: data.password,
-          newPassword: data.confirmPassword,
-        }
-      );
-      if (response.status === 201) {
-        navigate("/login");
-      }
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+    await changePassword(payload);
   };
 
   return (
@@ -46,30 +51,33 @@ const changePassword: React.FC = () => {
         <form onSubmit={handleSubmit} className="changepass_center" action="">
           <h4>Change Password</h4>
 
-          <label htmlFor="password">Old Password</label>
+          <label htmlFor="currentPassword">Old Password</label>
           <input
             type="password"
             placeholder="Enter the default password"
-            name="password"
-            onChange={handleChange}
+            name="currentPassword"
+            value={currentPassword}
+            onChange={handleCurrentPassword}
             required
           />
 
-          <label htmlFor="password">New Password</label>
+          <label htmlFor="newPassword">New Password</label>
           <input
             type="password"
             placeholder="Enter a new password"
-            name="password"
-            onChange={handleChange}
+            name="newPassword"
+            value={newPassword}
+            onChange={handleNewPassword}
             required
           />
 
-          <label htmlFor="confirm_password">Confirm Password</label>
+          <label htmlFor="confirmPassword">Confirm Password</label>
           <input
             type="password"
             placeholder="Confirm your new password"
             name="confirmPassword"
-            onChange={handleChange}
+            value={confirmPassword}
+            onChange={handleConfirmPassword}
             required
           />
 
@@ -84,4 +92,4 @@ const changePassword: React.FC = () => {
   );
 };
 
-export default changePassword;
+export default changePassword; 
