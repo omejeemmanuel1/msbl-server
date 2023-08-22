@@ -28,19 +28,20 @@ const VerifyOtp: React.FC = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
-      if(response.data.message=="OTP verified successfully. Proceed to change your password"){
+      if (
+        response.data.message ==
+        "OTP verified successfully. Proceed to change your password"
+      ) {
         swal("OTP verified successfully. Proceed to change your password");
 
         setTimeout(() => {
           navigate("/reset-password");
         }, 2000);
-
       }
-
     } catch (error) {
       console.error(error);
     }

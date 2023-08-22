@@ -6,7 +6,7 @@ import UserForm from "./components/dashboard/UserForm";
 import AdminPage from "./pages/Dashboards/AdminPage";
 import SuperAdminPage from "./pages/Dashboards/SuperAdminPage";
 import CreateDepartment from "./components/dashboard/CreateDepartment";
-import LoginPage from "./pages/Login/Login";
+import LoginPage from "./pages/Login/login";
 import ChangePasswordPage from "./pages/Passwords/ChangePasswordPage";
 import ForgotPasswordPage from "./pages/Passwords/ForgotPasswordPage";
 import VerifyOTPPage from "./pages/Passwords/VerifyOTPPage";

@@ -102,10 +102,11 @@ export const SendActivationLink = async (
             Welcome to Operations Work Flow
           </h1>
           <h2>Activate your account</h2>
+          <h4> Dear ${name}</h4>
           <p>
             Your accout activation link is below — enter it in the browser window to change your password and activate your account.
           </p>
-          <h1>${name}</h1>
+          <h4>Default Password: Passw0rd!</h4>
           <p>Please click the following link to verify your account:</p>
           <a href="${verificationLink}/${id}">${verificationLink}/${id}</a>
           <p>Note that the link is only valid for a limited time.</p>
