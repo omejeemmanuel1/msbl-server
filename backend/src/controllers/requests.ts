@@ -179,11 +179,11 @@ export const approveRequest = async (req: Request | any, res: Response) => {
 
     let updatedStatus = '';
     let updatedStage = '';
-    if (user.role === 'checker') {
+    if (user.role === 'operations') {
       updatedStatus = 'Pending';
       updatedStage = WorkflowStage.Approval;
     } else if (user.role === 'initiator') {
-      updatedStatus = 'Approved';
+      updatedStatus = 'Completed';
       updatedStage = WorkflowStage.Completed;
     } else {
       return res.status(403).json({ error: 'Unauthorized role.' });
@@ -237,7 +237,7 @@ export const declineRequest = async (req: Request | any, res: Response) => {
 
     const updateFields = {
       stage: WorkflowStage.Declined,
-      status: 'Declined',
+      status: 'Completed',
     };
 
     const options = { new: true };

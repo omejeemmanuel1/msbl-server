@@ -16,42 +16,46 @@ const DataProvider = ({ children }: any) => {
 
   const changePassword = async (user: any) => {
     try {
-        const changePasswordData = {
-          currentPassword: user.currentPassword,
-          newPassword: user.newPassword,
-          confirmPassword: user.confirmPassword
-        };
-     
-        await apiPostWithoutBearer(`/password/change/${user.id}`, changePasswordData)
-        .then((response) => {
+      const changePasswordData = {
+        currentPassword: user.currentPassword,
+        newPassword: user.newPassword,
+        confirmPassword: user.confirmPassword,
+      };
+
+      await apiPostWithoutBearer(
+        `/password/change/${user.id}`,
+        changePasswordData
+      ).then((response) => {
         console.log(response.data);
-      localStorage.setItem("success", response.data);
-        swal("ALERT",response.data.message,"success");
-       setTimeout(()=>{
-        window.location.href = '/login';
-      }, 2000)
-   });
-    } catch (error:any) {
-      console.log(error)
-      swal("ALERT", error.response.data.error,"error");
+        localStorage.setItem("success", response.data);
+        swal("ALERT", response.data.message, "success");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      });
+    } catch (error: any) {
+      console.log(error);
+      swal("ALERT", error.response.data.error, "error");
     }
   };
 
   const forgotPassword = async (user: any) => {
     try {
-        const forgotPasswordData = {
-          email: user.email
-        };
-       await apiPost(`/password/forgot`, forgotPasswordData).then((response)=>{
-        const token  = response.data.token;
-       localStorage.setItem("token",token)
-      
-      swal("OTP sent successfully. Check your mail for instructions to reset your password");
-      
-       setTimeout(()=>{
-        window.location.href = '/verify-otp';
-      }, 2000)
-   });
+      const forgotPasswordData = {
+        email: user.email,
+      };
+      await apiPost(`/password/forgot`, forgotPasswordData).then((response) => {
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+
+        swal(
+          "OTP sent successfully. Check your mail for instructions to reset your password"
+        );
+
+        setTimeout(() => {
+          window.location.href = "/verify-otp";
+        }, 2000);
+      });
     } catch (error) {
       console.log("Error ", error);
     }
@@ -59,18 +63,18 @@ const DataProvider = ({ children }: any) => {
 
   const resetPassword = async (user: any) => {
     try {
-        const resetPasswordData = {
-          newPassword: user.newPassword,
-          confirmPassword: user.confirmPassword
-        };
-       await apiPost(`/password/reset`, resetPasswordData).then((response)=>{
+      const resetPasswordData = {
+        newPassword: user.newPassword,
+        confirmPassword: user.confirmPassword,
+      };
+      await apiPost(`/password/reset`, resetPasswordData).then((response) => {
         console.log(response);
-      localStorage.setItem("success", response.data);
+        localStorage.setItem("success", response.data);
         swal("Password reset sucessfully");
-       setTimeout(()=>{
-        window.location.href = '/login';
-      }, 2000)
-   });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      });
     } catch (error) {
       console.log("Error ", error);
     }

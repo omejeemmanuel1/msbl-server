@@ -10,19 +10,6 @@ import {
   verificationLink,
 } from '../config';
 
-// Constants
-const OTP_EXPIRY_TIME = 30 * 60 * 1000;
-
-// Email transporter configuration
-const emailTransporter = nodemailer.createTransport({
-  host: hostname,
-  port: port,
-  auth: {
-    user: username,
-    pass: password,
-  },
-});
-
 export const GenerateSalt = async () => {
   return await bcrypt.genSalt();
 };
@@ -34,7 +21,7 @@ export const GeneratePassword = async (password: string, salt: string) => {
 export const GenerateOtp = () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   const expiry = new Date();
-  expiry.setTime(new Date().getTime() + OTP_EXPIRY_TIME);
+  expiry.setTime(new Date().getTime() + 30 * 60 * 1000);
   return { otp, expiry };
 };
 
@@ -74,6 +61,17 @@ export const ValidateToken = async (token: string) => {
   }
 };
 
+// Email transporter configuration
+const emailTransporter = nodemailer.createTransport({
+  host: hostname,
+  port: port,
+  secure: false,
+  auth: {
+    user: username,
+    pass: password,
+  },
+});
+
 export const SendEmail = async (to: string, subject: string, html: string) => {
   try {
     const mailOptions = {
@@ -110,7 +108,7 @@ export const SendActivationLink = async (
           <p>Please click the following link to verify your account:</p>
           <a href="${verificationLink}/${id}">${verificationLink}/${id}</a>
           <p>Note that the link is only valid for a limited time.</p>
-          <p>If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.</p>
+          <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
         </div>
         `;
   await SendEmail(email, subject, html);
@@ -120,22 +118,26 @@ export const SendPasswordResetOTP = async (email: string, otp: number) => {
   const subject = 'Password Reset OTP';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
-          <p>Your OTP to reset your password is:</p>
+          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+            Welcome to Operations Work Flow
+          </h1>
+          <h2>Reset Password OTP</h2>
+          <p>Your One Time Password (OTP) for resetting your password is:</p>
           <h1>${otp}</h1>
-          <p>Please enter this OTP to reset your password.</p>
-          <p>Note that the OTP is only valid for 30 minutes.</p>
-          <p>If you did not make this request, please ignore this email.</p>
+          <p>Please enter this OTP to reset your password. Note that the OTP is only valid for 30 minutes.</p>
+          <p>If you did not initiate this request kindly contact your admin immediately or contact us at contact@meristemng.com.</p>
+          <p>Do not share your OTP with anyone!</p>
         </div>
         `;
   await SendEmail(email, subject, html);
 };
 
-export const SendClientRequestStatus = async (
+export const SendClientStatusProcessing = async (
   email: string,
   name: string,
-  status: string,
+  request: string,
 ) => {
-  const subject = 'Request Status Update (Client)';
+  const subject = 'Request Status Update';
   const html = `
         <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
           <h1 style="text-transform:uppercase; text-align:center; color:teal;">
@@ -143,18 +145,41 @@ export const SendClientRequestStatus = async (
           </h1>
           <h2>Request Status Update</h2>
           <p>Dear ${name},</p>
-          <p>Your request status has been updated.</p>
-          <h1>${status}</h1>
-          <p>Please contact us at operations@meristemng.com if you have any questions or concerns about your request.</p>
-          <p>If you didn’t request this email or have any questions, there’s nothing to worry about — you can safely ignore it.</p>
+          <p>Your ${request} request is being processed. We will keep you updated on the status.</p>
+          <p>Warm Regards,</p>
+          <p>Please email contact@meristemng.com for further updates. To access your portfolio, kindly visit <a href="www.meritrade.com">www.meritrade.com</a>.</p>
+          <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
         </div>
-        `;
+       `;
+  await SendEmail(email, subject, html);
+};
+
+export const SendClientStatusCompleted = async (
+  email: string,
+  name: string,
+  request: string,
+) => {
+  const subject = 'Request Status Update';
+  const html = `
+        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+            Meristem Operations Work Flow
+          </h1>
+          <h2>Request Status Update</h2>
+          <p>Dear ${name},</p>
+          <p>Your ${request} request has been completed. Please email contact@meristemng.com for further updates. To access your portfolio, kindly visit <a href="www.meritrade.com">www.meritrade.com</a>.</p>
+          <p>Warm Regards,</p>
+          <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
+        </div>
+       `;
   await SendEmail(email, subject, html);
 };
 
 export const SendInitiatorRequestStatus = async (
   email: string,
   name: string,
+  client: string,
+  request: string,
   status: string,
 ) => {
   const subject = 'Request Status Update (Initiator)';
@@ -165,8 +190,8 @@ export const SendInitiatorRequestStatus = async (
           </h1>
           <h2>Request Status Update</h2>
           <p>Dear ${name},</p>
-          <p>The status of the request you are working on has been updated.</p>
-          <h2>${status}</h2>
+          <p>Your request to process ${request} for ${client} has been updated. Please follow up to confirm status.</p>
+          <h2>Status of Request: ${status}</h2>
        </div>
        `;
   await SendEmail(email, subject, html);
@@ -175,6 +200,8 @@ export const SendInitiatorRequestStatus = async (
 export const SendOperationsRequestStatus = async (
   email: string,
   name: string,
+  client: string,
+  request: string,
   status: string,
 ) => {
   const subject = 'Request Status Update (Operations)';
@@ -185,8 +212,30 @@ export const SendOperationsRequestStatus = async (
           </h1>
           <h2>Request Status Update</h2>
           <p>Dear ${name},</p>
-          <p>The status of the request you are working on has been updated.</p>
-          <h2>${status}</h2>
+          <p>Your request to process ${request} for ${client} has been updated. Please follow up to confirm status.</p>
+          <h2>Status of Request: ${status}</h2>
+       </div>
+       `;
+  await SendEmail(email, subject, html);
+};
+
+export const SendReminder = async (
+  email: string,
+  name: string,
+  client: string,
+  request: string,
+  status: string,
+) => {
+  const subject = 'Reminder: Request Status Update';
+  const html = `
+        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+            Meristem Operations Work Flow
+          </h1>
+          <h2>Request Status Update</h2>
+          <p>Dear ${name},</p>
+          <p>Your request to process ${request} for ${client} is scheduled for completion in 24 hours. Please follow up to confirm status.</p>
+          <h2>Status of Request: ${status}</h2>
        </div>
        `;
   await SendEmail(email, subject, html);

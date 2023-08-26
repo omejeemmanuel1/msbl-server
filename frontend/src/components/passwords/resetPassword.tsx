@@ -3,6 +3,7 @@ import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 const changePassword = () => {
   const navigate = useNavigate();
@@ -31,7 +32,10 @@ const changePassword = () => {
         }
       );
 
-      navigate("/login");
+        swal("Pasword reset successfully, proceed to login.")
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
 
       console.log(response);
     } catch (error) {

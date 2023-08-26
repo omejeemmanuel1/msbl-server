@@ -1,12 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export enum WorkflowStage {
-  Draft = 'Request Sent',
-  Review = 'In Progress',
-  Approval = 'Request Approved',
-  Declined = 'Request Declined',
-  Completed = 'Request Completed',
-  Cancelled = 'Request Cancelled',
+  Draft = 'Initiated', //Initial stage, after creating a request by the initiator
+  Review = 'In Progress', //When a comment is added either by an initiator or checker
+  Approval = 'Approved', //When approved by operations (after adding comment)
+  Declined = 'Declined', //When declined by either initiator or checker
+  Completed = 'Completed', //When approved by the initiator following approval by checker
 }
 
 export interface Comment {
@@ -38,7 +37,7 @@ export const RequestSchema = new Schema<RequestDocument>(
     clientEmail: {
       type: String,
       required: true,
-      unique: true,
+      unique: false,
       validate: {
         validator: (value: string) => {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -90,6 +89,8 @@ export const RequestSchema = new Schema<RequestDocument>(
     ],
     status: {
       type: mongoose.Schema.Types.Mixed,
+      enum: ['Started', 'Pending', 'Completed'],
+      required: true,
     },
   },
   {
