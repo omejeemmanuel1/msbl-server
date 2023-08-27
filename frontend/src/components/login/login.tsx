@@ -45,7 +45,6 @@ const Login: React.FC = () => {
         console.log("Data:", data);
         localStorage.setItem("token", data.token);
         swal("Login", "Successful", "success");
-        swal("Login", "Successful", "success");
 
         if (user.email === "superadmin@meristemng.com") {
           navigate("/super-admin");
@@ -110,10 +109,10 @@ const Login: React.FC = () => {
               <button type="submit" className="login-btn">
                 Sign In
               </button>
-              {/* <p className='forgot_password'>
+              <p className='forgot_password'>
               Forgot your password?
               <a href="/forgot-password">Reset Password</a>
-            </p> */}
+            </p>
             </form>
           </div>
         </div>

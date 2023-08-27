@@ -25,6 +25,11 @@ export const apiPostWithoutBearer = (path: string, data: any) => {
   return axios.post(`${baseURL}${path}`, data);
 };
 
+    export const apiPostWithoutBearer = (path: string, data: any) => {
+        return axios.post(`${baseURL}${path}`, data);
+      };
+
+
 export const apiPut = (path: string, data: any) => {
   const config = {
     headers: {

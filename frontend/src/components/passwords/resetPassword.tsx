@@ -2,7 +2,7 @@ import { useState } from "react";
 import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
 import axios from "axios";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const changePassword = () => {
   const navigate = useNavigate();
@@ -19,20 +19,20 @@ const changePassword = () => {
     event.preventDefault();
     try {
       let response = await axios.post(
-        'http://localhost:3000/password/reset',
+        "http://localhost:3000/password/reset",
         {
           newPassword: data.newPassword,
           confirmPassword: data.confirmPassword,
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
       navigate("/login");
-     
+
       console.log(response);
     } catch (error) {
       console.log(error);

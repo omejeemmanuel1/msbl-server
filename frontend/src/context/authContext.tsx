@@ -186,6 +186,9 @@ const DataProvider = ({ children }: any) => {
   return (
     <dataContext.Provider
       value={{
+        forgotPassword,
+        resetPassword,
+        changePassword,
         login,
         fetchSingleUser,
         createAdmin,
@@ -196,9 +199,6 @@ const DataProvider = ({ children }: any) => {
         toggleActive,
         exportData,
         searchRequests,
-        changePassword,
-        resetPassword,
-        forgotPassword,
       }}
     >
       {children}

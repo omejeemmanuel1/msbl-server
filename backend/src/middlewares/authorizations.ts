@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/users';
@@ -21,7 +22,6 @@ export const isUser = async (
       if (!token) {
         return sendErrorResponse(res, 401, 'Kindly sign in as a user');
       }
-
       let verifiedUser;
 
       try {

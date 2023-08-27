@@ -10,11 +10,11 @@ import department from './routes/departments';
 import passwords from './routes/passwords';
 // import { errorHandler } from './middlewares/errorMiddleware';
 
-const app = express();
+export const app = express();
 const port = 3000;
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };

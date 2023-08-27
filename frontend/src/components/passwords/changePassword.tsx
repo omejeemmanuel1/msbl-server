@@ -2,20 +2,20 @@ import React, { useState } from "react";
 import Logo from "../../assets/meri-logo.png";
 import "./changePassword.css";
 import { useData } from "../../context/authContext";
-import { useParams  } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
-const changePassword: React.FC = () => { 
+const changePassword: React.FC = () => {
   const { id } = useParams();
   const { changePassword } = useData();
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const payload = {
     currentPassword,
     newPassword,
     confirmPassword,
-    id
+    id,
   };
 
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,35 +45,35 @@ const changePassword: React.FC = () => {
         <form onSubmit={handleSubmit} className="changepass_center" action="">
           <h4>Change Password</h4>
 
-          <label htmlFor="currentPassword">Old Password</label>
-          <input
-            type="password"
-            placeholder="Enter the default password"
-            name="currentPassword"
-            value={currentPassword}
-            onChange={handleCurrentPassword}
-            required
-          />
+            <label htmlFor="currentPassword">Default Password</label>
+            <input
+              type="password"
+              placeholder="Enter the default password"
+              name="currentPassword"
+              value={currentPassword}
+              onChange={handleCurrentPassword}
+              required
+            />
 
-          <label htmlFor="newPassword">New Password</label>
-          <input
-            type="password"
-            placeholder="Enter a new password"
-            name="newPassword"
-            value={newPassword}
-            onChange={handleNewPassword}
-            required
-          />
+            <label htmlFor="newPassword">New Password</label>
+            <input
+              type="password"
+              placeholder="Enter a new password"
+              name="newPassword"
+              value={newPassword}
+              onChange={handleNewPassword}
+              required
+            />
 
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            placeholder="Confirm your new password"
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={handleConfirmPassword}
-            required
-          />
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Confirm your new password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleConfirmPassword}
+              required
+            />
 
           <button type="submit" className="btn">
             Change Password
@@ -86,4 +86,4 @@ const changePassword: React.FC = () => {
   );
 };
 
-export default changePassword; 
+export default changePassword;
