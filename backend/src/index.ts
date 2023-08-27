@@ -8,7 +8,7 @@ import users from './routes/users';
 import requests from './routes/requests';
 import department from './routes/departments';
 import passwords from './routes/passwords';
-import { errorHandler } from './middlewares/errorMiddleware';
+// import { errorHandler } from './middlewares/errorMiddleware';
 
 const app = express();
 const port = 3000;

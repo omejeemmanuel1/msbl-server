@@ -23,7 +23,7 @@ router.post('/approve/:id', isUser, approveRequest);
 
 router.post('/decline/:id', isUser, declineRequest);
 
-router.get('/search', searchRequest);
+router.get('/search', isUser, searchRequest);
 
 router.get('/fetch/:id', isUser, fetchRequestbyID);
 
@@ -33,6 +33,6 @@ router.post('/add-comment/:id', isUser, addComment);
 
 router.patch('/edit-comment/:id', isUser, editComment);
 
-router.get('/export-requests', exportRequests);
+router.get('/export-requests', isUser, exportRequests);
 
 export default router;

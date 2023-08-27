@@ -25,7 +25,7 @@ export const createOrUpdateRequest = async (
       type,
       docURL,
       authURL,
-      comments,
+      // comments,
       narration,
     } = req.body;
 
@@ -65,7 +65,7 @@ export const createOrUpdateRequest = async (
         stage: WorkflowStage.Draft,
         docURL,
         authURL,
-        comments,
+        // comments,
         narration,
         status: 'Started',
       });
@@ -295,7 +295,7 @@ export const fetchAllRequests = async (req: Request, res: Response) => {
 export const addComment = async (req: Request | any, res: Response) => {
   try {
     const requestId = req.params.id;
-    const { comment } = req.body;
+    const { comment } = req.body; // Extract comment text directly
     const { email } = req.user;
 
     // Check user authentication
@@ -328,13 +328,13 @@ export const addComment = async (req: Request | any, res: Response) => {
     requestToUpdate.stage = WorkflowStage.Review;
     requestToUpdate.status = 'Pending';
 
-    // Save the updated request
     await requestToUpdate.save();
 
-    // Handle request updates using the helper function
-    await handleRequestUpdates(requestToUpdate, user, requestToUpdate.stage);
+    // You might have your own logic here to handle request updates
 
-    return res.status(200).json({ message: 'Request updated successfully' });
+    return res
+      .status(200)
+      .json({ message: 'Comment added successfully', comment: newComment });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Internal server error' });

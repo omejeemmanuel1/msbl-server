@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaSearch } from "react-icons/fa"; // Import the search icon from react-icons
-import "./SearchBar.css"; // Import the external CSS file
+import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import "./SearchBar.css";
 
 interface SearchResult {
+  _id: any;
   clientName?: string;
   initiator?: string;
   type?: string;
@@ -13,10 +15,13 @@ interface SearchResult {
   narration?: string;
 }
 
-const SearchBar:React.FC = () => {
+const SearchBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Track loading state
+  const navigate = useNavigate();
+
+  const getTokenFromLocalStorage = () => {
+    return localStorage.getItem("token");
+  };
 
   const handleSearch = async () => {
     try {
@@ -24,21 +29,25 @@ const SearchBar:React.FC = () => {
         toast.error("Please enter a valid search query");
         return;
       }
+      const token = getTokenFromLocalStorage();
 
-      setIsLoading(true); // Start loading
       const response = await axios.get(
         `http://localhost:3000/requests/search`,
         {
           params: {
             name: searchQuery,
           },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      setSearchResults(response.data.results);
+
+      navigate("/search-results", {
+        state: { searchResults: response.data.results },
+      });
     } catch (error) {
       console.error("Error:", error);
-    } finally {
-      setIsLoading(false); // End loading
     }
   };
 
@@ -48,33 +57,12 @@ const SearchBar:React.FC = () => {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search..."
+        placeholder="Search by client name, initiator, request type or status"
         className="search-input"
       />
-      <button
-        onClick={handleSearch}
-        className={`search-button ${isLoading ? "loading" : ""}`}
-        disabled={isLoading}
-      >
-        {isLoading ? "Searching..." : <FaSearch />}{" "}
-        {/* Display icon or loading text */}
+      <button onClick={handleSearch} className="search-button">
+        <FaSearch />
       </button>
-      <div>
-        {/* Search results */}
-        {searchResults.map((result, index) => (
-          <div key={index} className="search-result">
-            <p className="result-name">
-              {result.clientName && `Client Name: ${result.clientName}`}
-            </p>
-            <p>{result.initiator && `Initiator Name: ${result.initiator}`}</p>
-            <p className="result-details">
-              {result.type && `Request Type: ${result.type}`}
-            </p>
-            <p>{result.status && `Status: ${result.status}`}</p>
-            <p>{result.narration && `Narration: ${result.narration}`}</p>
-          </div>
-        ))}
-      </div>
       <ToastContainer />
     </div>
   );

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/meristem-logo.png";
-import { HiOutlineMenu, HiSearch } from "react-icons/Hi";
-import "./Initiator.css";
+import { HiOutlineMenu } from "react-icons/Hi";
+import Modal from "react-modal";
 import jwt_decode from "jwt-decode";
+import SearchBar from "../searchComponent/SearchBar";
+import ExportRequests from "../exportData/ExportData";
+import CreateRequest from "../../request/createRequest";
 
 interface DecodedToken {
   id: string;
@@ -15,6 +18,8 @@ const InitiatorNav: React.FC = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<DecodedToken | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isCreateRequestModalOpen, setCreateRequestModalOpen] = useState(false);
 
   const handleToggleMenu = () => {
     setShowMenu(!showMenu);
@@ -29,11 +34,8 @@ const InitiatorNav: React.FC = () => {
     const fetchLoggedInUserData = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log("Token:", token);
         if (token) {
           const decodedToken: DecodedToken = jwt_decode(token);
-          console.log("Decoded Token:", decodedToken);
-
           setUserData(decodedToken);
         }
       } catch (error) {
@@ -47,6 +49,25 @@ const InitiatorNav: React.FC = () => {
     localStorage.clear();
     navigate("/login");
   };
+
+  const handleToggleModal = () => {
+    setModalOpen(!isModalOpen);
+  };
+
+  const handleCreateRequestModal = () => {
+    setCreateRequestModalOpen(!isCreateRequestModalOpen);
+  };
+
+  const handleCreateRequestSuccess = () => {
+    setCreateRequestModalOpen(false);
+    navigate("/initiatorDashboard");
+  };
+
+  const handleExportRequestSuccess = () => {
+    setModalOpen(false);
+    navigate("/initiatorDashboard");
+  };
+
   return (
     <>
       <header className="top-bar">
@@ -54,21 +75,15 @@ const InitiatorNav: React.FC = () => {
           <img src={Logo} alt="Meristem" />
         </div>
 
-        {/* Mobile Menu Icon */}
         <button
           className={`toggle-menu-button ${showMenu ? "active" : ""}`}
           onClick={handleToggleMenu}
         >
           <HiOutlineMenu />
         </button>
-        {/* Mobile Menu */}
+
         <nav className={`navbar-mobile ${showMenu ? "show-menu" : ""}`}>
           <ul className="menu-mobile-main-menu">
-            <li>
-              <Link to="/createDepartment" className="link">
-                Make Request
-              </Link>
-            </li>
             <li style={{ borderBottom: "none" }}>
               {userData ? userData.firstName : "Loading..."}
             </li>
@@ -78,18 +93,21 @@ const InitiatorNav: React.FC = () => {
           </ul>
         </nav>
 
-        {/* Desktop Menu */}
-        <div className="list-item">
+        {/* Desktop nav */}
+        <div className="list-init">
           <div className="search-container">
-            <input type="text" placeholder="Search" className="search-input" />
-            <HiSearch className="search-icon" />
+            <SearchBar />
           </div>
-          <p className="para">
-            <Link to="/createDepartment" className="link">
+          <div>
+            <button className="request-link" onClick={handleCreateRequestModal}>
               Make Request
-            </Link>
-          </p>
+            </button>
+            <button className="request-link" onClick={handleToggleModal}>
+              Spool data
+            </button>
+          </div>
         </div>
+
         <div className="nav">
           <ul className="nav-menu">
             <div className="user-initials">
@@ -102,12 +120,63 @@ const InitiatorNav: React.FC = () => {
                 ? `${userData.firstName} ${userData.lastName}`
                 : "Loading..."}
             </li>
-
             <li className="nav-item" onClick={handleLogout}>
               Logout
             </li>
           </ul>
         </div>
+
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={handleToggleModal}
+          contentLabel="Export Requests Modal"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0, 0, 0, 0.97)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            content: {
+              position: "relative",
+              left: "400px",
+              border: "none",
+              background: "none",
+              padding: 0,
+              width: "100%",
+            },
+          }}
+        >
+          <div className="modal-content">
+            <ExportRequests onExport={handleExportRequestSuccess} />
+          </div>
+        </Modal>
+        <Modal
+          isOpen={isCreateRequestModalOpen}
+          onRequestClose={handleCreateRequestModal}
+          contentLabel="Create Requests Modal"
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0, 0, 0, 0.97)", // Darken the background
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            content: {
+              position: "relative",
+              left: "280px",
+              top: "-5px",
+              border: "none",
+              background: "none",
+              padding: 0,
+              width: "100%",
+            },
+          }}
+        >
+          <div className="modal-request">
+            <CreateRequest onSuccess={handleCreateRequestSuccess} />
+          </div>
+        </Modal>
       </header>
     </>
   );

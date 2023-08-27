@@ -1,11 +1,11 @@
 import express from 'express';
 import { createDept, fetchDepartment } from '../controllers/departments';
-import { isAdmin } from '../middlewares/authorizations';
+import { isUser } from '../middlewares/authorizations';
 
 const router = express.Router();
 
-router.post('/create-dept', isAdmin, createDept);
+router.post('/create-dept', isUser, createDept);
 
-router.get('/all-departments', isAdmin, fetchDepartment);
+router.get('/all-departments', isUser, fetchDepartment);
 
 export default router;

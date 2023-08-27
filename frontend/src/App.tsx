@@ -13,6 +13,7 @@ import VerifyOTPPage from "./pages/Passwords/VerifyOTPPage";
 import ResetPasswordPage from "./pages/Passwords/ResetPasswordPage";
 import SuperAdminPage from "./pages/Dashboards/SuperAdminPage";
 import AdminPage from "./pages/Dashboards/AdminPage";
+import SearchResultsPage from "./components/searchComponent/SearchResultPage";
 
 function App() {
   return (
@@ -31,8 +32,9 @@ function App() {
             <Route path="/userForm" element={<UserForm />} />
             <Route path="/createDepartment" element={<CreateDepartment />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/InitiatorDashboard" element={<InitiatorPage />} />
-            <Route path="/SingleRequest" element={<SingleRequest />} />
+            <Route path="/initiatorDashboard" element={<InitiatorPage />} />
+            <Route path="/singleRequest/:_id" element={<SingleRequest />} />
+            <Route path="/search-results" element={<SearchResultsPage />} />
           </Routes>
         </Router>
       </DataProvider>

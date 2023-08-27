@@ -20,21 +20,27 @@ const VerifyOtp: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const otp = otpDigits.join("");
-
     try {
       const response = await axios.post(
         "http://localhost:3000/password/verify-otp",
         {
           otp: parseInt(otp),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
+      if(response.data.message=="OTP verified successfully. Proceed to change your password"){
+        swal("OTP verified successfully. Proceed to change your password");
 
-      console.log(response);
-      swal("OTP verified successfully. Proceed to change your password");
+        setTimeout(() => {
+          navigate("/reset-password");
+        }, 2000);
 
-      setTimeout(() => {
-        navigate("/reset-password");
-      }, 2000);
+      }
+
     } catch (error) {
       console.error(error);
     }

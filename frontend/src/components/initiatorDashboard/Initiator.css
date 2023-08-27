@@ -30,6 +30,22 @@
   font-weight: bold;
 }
 
+.request-link {
+  background-color: #fff;
+  color: #21502c;
+  border: 1px solid #21502c;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-right: 20px;
+}
+
+.request-link:hover {
+  background-color: #21502c;
+  color: #fff;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
 .nav-item {
   margin-right: 20px;
   padding-top: 5px;
@@ -52,11 +68,11 @@
   margin-right: 10px;
 }
 
-.top-bar .list-item {
+.top-bar .list-init {
   display: flex;
-  margin-left: 250px;
+  margin-left: 50px;
 }
-.list-item .para {
+.list-init .para {
   margin-right: 60px;
   font-size: 15px;
 }
@@ -66,6 +82,20 @@
 .para .link {
   text-decoration: none;
   color: #21502c;
+}
+
+.modal-content {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 300px;
+  width: 45%;
+  border-radius: 10px;
+}
+
+.modal-request {
+  background-color: white;
+  border-radius: 10px;
+  width: 60%;
 }
 
 /* Add this CSS to hide the mobile menu on desktop */
