@@ -108,22 +108,26 @@ export const SendActivationLink = async (
 ) => {
   const subject = 'Account Activation';
   const html = `
-        <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
-          <h1 style="text-transform:uppercase; text-align:center; color:teal;">
-            Welcome to Operations Work Flow
-          </h1>
-          <h2>Activate your account</h2>
-          <h4> Dear ${name}</h4>
-          <p>
-            Your accout activation link is below — enter it in the browser window to change your password and activate your account.
-          </p>
-          <h4>Default Password: Passw0rd!</h4>
-          <p>Please click the following link to verify your account:</p>
-          <a href="${verificationLink}/${id}">${verificationLink}/${id}</a>
-          <p>Note that the link is only valid for a limited time.</p>
-          <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
-        </div>
-        `;
+    <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
+      <h1 style="text-transform:uppercase; text-align:center; color:teal;">
+        Welcome to Operations Work Flow
+      </h1>
+      <h2>Activate your account</h2>
+      <h4> Dear ${name}</h4>
+      <p>
+        Your account activation link is below — enter it in the browser window to change your password and activate your account.
+      </p>
+      <h4>Default Password: Passw0rd!</h4>
+      <p>Please click the following button to verify your account:</p>
+      <a href="${verificationLink}/${id}">
+        <button style="background-color: teal; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+          Verify Account
+        </button>
+      </a>
+      <p>Note that the link is only valid for a limited time.</p>
+      <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
+    </div>
+  `;
   await SendEmail(email, subject, html);
 };
 
