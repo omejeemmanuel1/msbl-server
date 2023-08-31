@@ -7,7 +7,7 @@ import {
   username,
   password,
   port,
-  verificationLink,
+  // verificationLink,
 } from '../config';
 
 export const GenerateSalt = async () => {
@@ -106,7 +106,13 @@ export const SendActivationLink = async (
   name: string,
   id: string,
 ) => {
+  const ACTIVATION_LINK =
+    'https://msbl-workflow.vercel.app/change-password/:id'; // Update this with the correct base URL
   const subject = 'Account Activation';
+
+  // Replace :id with the actual id parameter value in the activation link
+  const activationLink = `${ACTIVATION_LINK.replace(':id', id)}`;
+
   const html = `
     <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
       <h1 style="text-transform:uppercase; text-align:center; color:teal;">
@@ -119,15 +125,16 @@ export const SendActivationLink = async (
       </p>
       <h4>Default Password: Passw0rd!</h4>
       <p>Please click the following button to verify your account:</p>
-      <a href="${verificationLink}/${id}">
+      <a href="${activationLink}">
         <button style="background-color: teal; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
           Verify Account
         </button>
       </a>
       <p>Note that the link is only valid for a limited time.</p>
-      <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
+      <p>If you didn't request this email, there's nothing to worry about, you can safely ignore it.</p>
     </div>
   `;
+
   await SendEmail(email, subject, html);
 };
 
