@@ -119,7 +119,7 @@ export const SendActivationLink = async (
       </p>
       <h4>Default Password: Passw0rd!</h4>
       <p>Please click the following button to verify your account:</p>
-      <a href="${verificationLink}/${id}">
+      <a href="${verificationLink}/${id}"> 
         <button style="background-color: teal; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
           Verify Account
         </button>
