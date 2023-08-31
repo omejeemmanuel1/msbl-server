@@ -14,7 +14,7 @@ export const app = express();
 const port = 3000;
 
 const corsOptions = {
-  origin: '*',
+  origin: 'https://msbl-workflow.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
