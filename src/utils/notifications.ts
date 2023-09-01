@@ -112,7 +112,7 @@ export const SendActivationLink = async (email: string, name: string) => {
       <h2>Activate your account</h2>
       <h4> Dear ${name}</h4>
       <p>
-        Please click on the button below to go and reset your password.
+        Please click on the button below, then click on the forgot passwork link, follow the process to get a login password.
       </p>
       <a href="${verificationLink}" target="_blank"> 
         <button style="background-color: teal; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
