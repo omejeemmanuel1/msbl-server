@@ -7,7 +7,7 @@ import {
   username,
   password,
   port,
-  // verificationLink,
+  verificationLink,
 } from '../config';
 
 export const GenerateSalt = async () => {
@@ -101,8 +101,11 @@ export const SendEmail = async (to: string, subject: string, html: string) => {
   }
 };
 
-export const SendActivationLink = async (email: string, name: string) => {
-  const verificationLink = 'https://msbl-workflow.vercel.app'; // Update with the actual backend URL
+export const SendActivationLink = async (
+  email: string,
+  name: string,
+  id: string,
+) => {
   const subject = 'Account Activation';
   const html = `
     <div style="max-width:700px; font-size:110%; border:10px solid #ddd; padding:50px 20px; margin:auto; ">
@@ -112,15 +115,17 @@ export const SendActivationLink = async (email: string, name: string) => {
       <h2>Activate your account</h2>
       <h4> Dear ${name}</h4>
       <p>
-        Please click on the button below, then click on the forgot passwork link, follow the process to get a login password.
+        Your account activation link is below — enter it in the browser window to change your password and activate your account.
       </p>
-      <a href="${verificationLink}" target="_blank"> 
+      <h4>Default Password: Passw0rd!</h4>
+      <p>Please click the following button to verify your account:</p>
+      <a href="${verificationLink}/${id}"> 
         <button style="background-color: teal; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-          Go to MSBL-workflow
+          Verify Account
         </button>
       </a>
       <p>Note that the link is only valid for a limited time.</p>
-      <p>If you didn't request this email, there's nothing to worry about, you can safely ignore it.</p>
+      <p>If you didn’t request this email, there’s nothing to worry about, you can safely ignore it.</p>
     </div>
   `;
   await SendEmail(email, subject, html);

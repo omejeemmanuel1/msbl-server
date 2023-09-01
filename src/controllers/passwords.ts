@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import {
   GenerateOtp,
   GeneratePassword,
@@ -10,12 +11,56 @@ import {
 import { User } from '../models/users';
 import { Verification } from '../models/passwords';
 
+const STATUS_ACTIVE = 'active';
+
 const sendErrorResponse = (
   res: Response,
   statusCode: number,
   message: string,
 ) => {
   return res.status(statusCode).json({ message });
+};
+
+// Change Password API
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      return sendErrorResponse(res, 401, 'Invalid current password');
+    }
+
+    if (newPassword !== confirmPassword) {
+      return sendErrorResponse(res, 400, 'Passwords do not match');
+    }
+
+    const salt = await GenerateSalt();
+    const hashedNewPassword = await GeneratePassword(newPassword, salt);
+
+    user.status = STATUS_ACTIVE;
+    await user.save();
+    await user.updateOne({ password: hashedNewPassword });
+
+    return res.status(200).json({
+      staus: 200,
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    console.error(error);
+    return sendErrorResponse(res, 500, 'Internal server error');
+  }
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {

@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  changePassword,
   forgotPassword,
   resetPassword,
   verifyOTP,
@@ -13,5 +14,7 @@ router.post('/forgot', forgotPassword);
 router.post('/verify-otp', isUser, verifyOTP);
 
 router.post('/reset', isUser, resetPassword);
+
+router.post('/change/:id', changePassword);
 
 export default router;
