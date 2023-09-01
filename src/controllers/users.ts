@@ -206,11 +206,7 @@ export const createUser = async (req: Request, res: Response) => {
       const savedUser = await newUser.save();
       savedUsers.push(savedUser);
 
-      await SendActivationLink(
-        email,
-        `${firstName} ${lastName}`,
-        savedUser._id,
-      );
+      await SendActivationLink(email, `${firstName} ${lastName}`);
     }
 
     res.status(201).json({ message: 'User created successfully', savedUsers });
