@@ -14,7 +14,7 @@ export const app = express();
 const port = 3000;
 
 const corsOptions = {
-  origin: 'https://msbl-workflow.netlify.app',
+  origin: 'https://msbl.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
