@@ -88,7 +88,7 @@ const emailTransporter = nodemailer.createTransport({
 export const SendEmail = async (to: string, subject: string, html: string) => {
   try {
     const mailOptions = {
-      from: 'MSBL',
+      from: 'MSBL <quickgrade.hq@gmail.com>',
       to: to,
       subject: subject,
       html: html,
